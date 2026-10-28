@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Process Management – Year 12 Pre-learning | Pearson Edexcel IAS</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+body{margin:0;padding:0;background:#f5f5f5;font-family:'Lato',sans-serif;font-size:14pt;color:#333333;line-height:1.65;}
+
+.opt{display:block;font-family:'Lato',sans-serif;font-size:14pt;padding:11px 18px;border:2px solid #d0d0d0;border-radius:6px;background:#ffffff;color:#333333;cursor:pointer;margin-bottom:10px;line-height:1.4;user-select:none;-webkit-user-select:none;transition:background 0.12s,border-color 0.12s;}
+.opt:hover{background:#e3f2fd;border-color:#007BA6;}
+.opt.selected{background:#e3f2fd;border-color:#007BA6;font-weight:700;}
+.opt.correct{background:#e8f5e9!important;border-color:#388e3c!important;color:#1b5e20!important;font-weight:700;pointer-events:none;cursor:default;}
+.opt.wrong{background:#ffebee!important;border-color:#C62828!important;color:#7f0000!important;pointer-events:none;cursor:default;}
+.opt.reveal{background:#e8f5e9!important;border-color:#388e3c!important;color:#1b5e20!important;font-weight:700;pointer-events:none;cursor:default;}
+.opt.locked{pointer-events:none;cursor:default;}
+
+.wopt{display:inline-block;font-family:'Courier New',Courier,monospace;font-size:13pt;font-weight:700;padding:8px 18px;border:2px solid #d0d0d0;border-radius:6px;background:#ffffff;color:#333333;cursor:pointer;margin:4px 6px 4px 0;line-height:1.4;user-select:none;-webkit-user-select:none;transition:background 0.12s,border-color 0.12s;}
+.wopt:hover{background:#e3f2fd;border-color:#007BA6;}
+.wopt.selected{background:#e3f2fd;border-color:#007BA6;color:#007BA6;}
+.wopt.correct{background:#e8f5e9!important;border-color:#388e3c!important;color:#1b5e20!important;pointer-events:none;}
+.wopt.wrong{background:#ffebee!important;border-color:#C62828!important;color:#7f0000!important;pointer-events:none;}
+.wopt.reveal{background:#e8f5e9!important;border-color:#388e3c!important;color:#1b5e20!important;pointer-events:none;}
+.wopt.locked{pointer-events:none;}
+
+.fb{display:none;font-family:'Lato',sans-serif;font-size:14pt;line-height:1.65;padding:14px 18px;border-radius:6px;margin-top:14px;}
+.fb-ok{background:#e8f5e9;color:#1b5e20;border:1px solid #81c784;}
+.fb-bad{background:#ffebee;color:#7f0000;border:1px solid #ef9a9a;}
+
+.tf-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:10px;padding:12px 16px;background:#fff;border:1px solid #d0d0d0;border-radius:6px;flex-wrap:wrap;}
+.tf-stmt{flex:1;font-family:'Lato',sans-serif;font-size:14pt;color:#333;line-height:1.5;}
+.tf-btns{display:flex;gap:8px;flex-shrink:0;margin-top:2px;}
+.tf-btn{font-family:'Lato',sans-serif;font-size:12pt;font-weight:700;padding:7px 18px;border:2px solid #d0d0d0;border-radius:6px;background:#fff;color:#333;cursor:pointer;}
+.tf-btn:hover{background:#e3f2fd;border-color:#007BA6;}
+.tf-btn.ok{background:#e8f5e9;border-color:#388e3c;color:#1b5e20;pointer-events:none;}
+.tf-btn.bad{background:#ffebee;border-color:#C62828;color:#7f0000;pointer-events:none;}
+.tf-btn.show{background:#e8f5e9;border-color:#388e3c;color:#1b5e20;pointer-events:none;}
+.tf-row.done .tf-btn{pointer-events:none;}
+.tf-row > div:not(.tf-stmt):not(.tf-btns){flex-basis:100%;}
+
+.match-row{display:grid;grid-template-columns:200px 1fr;gap:8px;margin-bottom:8px;align-items:center;}
+.match-term{font-family:'Courier New',monospace;font-size:13pt;font-weight:700;padding:9px 12px;background:#1e1e2e;border-radius:6px;color:#a6e3a1;text-align:center;line-height:1.4;}
+.match-sel{font-family:'Lato',sans-serif;font-size:13pt;padding:9px 12px;border:2px solid #d0d0d0;border-radius:6px;background:#fff;color:#333;width:100%;cursor:pointer;}
+.match-sel:focus{outline:none;border-color:#007BA6;}
+.match-row.ok .match-sel{background:#e8f5e9;border-color:#388e3c;color:#1b5e20;}
+.match-row.bad .match-sel{background:#ffebee;border-color:#C62828;color:#7f0000;}
+.match-btn,.check-btn{display:inline-block;font-family:'Lato',sans-serif;font-size:12pt;font-weight:700;padding:8px 22px;border:2px solid #007BA6;border-radius:6px;background:#007BA6;color:#fff;cursor:pointer;margin-top:12px;}
+.match-btn:hover,.check-btn:hover{background:#005f80;}
+.match-btn:disabled,.check-btn:disabled{background:#b3d4e8;border-color:#b3d4e8;cursor:default;}
+.match-result,.drag-result{display:none;font-family:'Lato',sans-serif;font-size:14pt;line-height:1.65;padding:14px 18px;border-radius:6px;margin-top:12px;}
+
+.drag-bank{display:flex;flex-wrap:wrap;gap:8px;padding:14px;background:#f0f8ff;border:2px dashed #b3d4e8;border-radius:6px;min-height:52px;margin-bottom:12px;}
+.drag-chip{font-family:'Lato',sans-serif;font-size:12pt;font-weight:700;padding:7px 16px;border:2px solid #007BA6;border-radius:6px;background:#e3f2fd;color:#007BA6;cursor:grab;white-space:nowrap;user-select:none;-webkit-user-select:none;line-height:1.3;}
+.drag-chip:active{cursor:grabbing;opacity:0.7;}
+.drag-chip.picked{outline:3px solid #e65100;outline-offset:1px;}
+.drag-chip.locked{cursor:default;pointer-events:none;opacity:0.75;}
+.drop-zone{display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:4px 8px;border-bottom:3px solid #007BA6;background:#fafafa;font-family:'Lato',sans-serif;font-size:12pt;color:#C62828;font-weight:700;vertical-align:middle;text-align:center;min-height:36px;cursor:pointer;}
+.drop-zone:empty::before{content:'?';}
+.drop-zone.drag-over,.drag-bank.drag-over{background:#e3f2fd;border-bottom-color:#C62828;}
+.drop-zone .drag-chip{white-space:normal;}
+.sort-zone{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:6px;min-height:76px;}
+.sort-zone .drag-chip{white-space:normal;}
+.tap-tip{font-size:11pt;color:#666;margin-bottom:10px;font-style:italic;}
+
+code{font-family:'Courier New',monospace;background:#f0f0f0;padding:1px 6px;border-radius:3px;font-size:13pt;}
+.cx-tbl{border-collapse:collapse;width:100%;font-size:13pt;}
+.cx-tbl th{background:#007BA6;color:#fff;padding:9px 14px;border:1px solid #005f80;text-align:center;}
+.cx-tbl td{border:1px solid #d0d0d0;padding:8px 14px;text-align:left;vertical-align:top;}
+.cx-tbl tr:nth-child(even) td{background:#f0f8ff;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.g2>*,.g3>*{min-width:0;}
+.cls{border:2px solid #007BA6;border-radius:6px;background:#fff;font-family:'Courier New',monospace;font-size:12pt;overflow:hidden;}
+.cls-h{background:#007BA6;color:#fff;font-weight:700;text-align:center;padding:6px 10px;font-family:'Lato',sans-serif;font-size:13pt;}
+.cls-s{padding:6px 12px;border-top:1px solid #b3d4e8;line-height:1.7;}
+
+/* Gantt charts */
+.gantt{display:flex;border:2px solid #333;border-radius:4px;overflow:hidden;}
+.gc{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-family:'Courier New',monospace;font-size:13pt;height:44px;border-right:2px solid #fff;}
+.gc:last-child{border-right:none;}
+.gt{display:flex;font-size:11pt;color:#555;font-family:'Courier New',monospace;position:relative;margin-top:2px;}
+.gt-end{position:absolute;right:0;top:0;}
+.pA{background:#007BA6;}.pB{background:#388e3c;}.pC{background:#9966FF;}.pD{background:#e65100;}
+.gslot{display:flex;align-items:center;justify-content:center;padding:6px;background:#fafafa;border-right:2px solid #d0d0d0;min-height:56px;}
+.gslot:last-child{border-right:none;}
+.gslot .drop-zone{min-width:0;width:100%;}
+.gtime{font-size:11pt;color:#555;font-family:'Courier New',monospace;text-align:center;}
+
+/* State diagram activity */
+.diag{position:relative;width:820px;height:380px;margin:0 auto;}
+.diag svg{position:absolute;left:0;top:0;}
+.diag .drop-zone{position:absolute;min-width:0;background:rgba(255,255,255,0.92);}
+.diag .drag-chip{padding:5px 8px;font-size:11pt;}
+
+/* Queue diagram */
+.q-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.q-lbl{min-width:190px;font-size:12pt;font-weight:700;padding:8px 12px;border-radius:6px;color:#fff;line-height:1.3;}
+.q-box{display:flex;gap:4px;padding:6px;border:2px solid #d0d0d0;border-radius:6px;background:#fff;flex:1;min-height:44px;align-items:center;}
+.q-p{font-family:'Courier New',monospace;font-weight:700;font-size:12pt;padding:4px 10px;border-radius:4px;color:#fff;}
+.q-alg{font-size:11pt;font-weight:700;color:#555;min-width:110px;}
+
+@media (max-width:720px){
+  .g2,.g3{grid-template-columns:1fr;}
+  .match-row{grid-template-columns:1fr;}
+  .tf-row{flex-direction:column;}
+  .q-row{flex-wrap:wrap;}
+  .q-lbl{min-width:0;flex-basis:100%;}
+}
+</style>
+</head>
+<body style="margin:0;padding:0;background:#f5f5f5;">
+<div style="max-width:960px;margin:0 auto;padding:0 0 80px;">
+
+<!-- HEADER -->
+<div style="background:#007BA6;padding:32px 40px 28px;">
+  <div style="font-size:11pt;font-weight:700;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Pearson Edexcel International AS Computer Science &bull; Unit 1 &bull; Topic 1.2.3</div>
+  <div style="font-size:24pt;font-weight:700;color:#ffffff;margin:0 0 6px;">Operating Systems: Process Management</div>
+  <div style="font-size:14pt;color:rgba(255,255,255,0.88);">Pre-learning &nbsp;|&nbsp; Year 12 Computer Science</div>
+  <div style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap;">
+    <span style="background:rgba(255,255,255,0.2);color:#fff;font-size:11pt;font-weight:700;padding:4px 14px;border-radius:20px;">&#9679; 90 minutes</span>
+    <span style="background:rgba(255,255,255,0.2);color:#fff;font-size:11pt;font-weight:700;padding:4px 14px;border-radius:20px;">&#9679; 6 sections</span>
+    <span style="background:rgba(255,255,255,0.2);color:#fff;font-size:11pt;font-weight:700;padding:4px 14px;border-radius:20px;">&#9679; 22 interactive activities</span>
+  </div>
+</div>
+
+<!-- CONTENTS -->
+<div style="background:#ffffff;border-bottom:1px solid #d0d0d0;padding:20px 40px;">
+  <div style="font-size:12pt;font-weight:700;color:#007BA6;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Contents</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;">
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>What is a Process?</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>Process States</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>Scheduling</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>First-Come, First-Served &amp; Round Robin</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">5</div>Shortest Job First &amp; Multi-level Queue</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">6</div>Comparing Scheduling Algorithms</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">&#10003;</div>Summary</div>
+  </div>
+</div>
+
+<div style="padding:40px 40px 0;">
+
+<!-- ═══════════════════════════════════════════
+     SECTION 1 — WHAT IS A PROCESS?
+══════════════════════════════════════════════ -->
+<div style="margin-bottom:48px;padding-bottom:48px;border-bottom:1px solid #d0d0d0;">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #007BA6;">
+    <div style="min-width:36px;height:36px;border-radius:50%;background:#007BA6;color:#fff;font-size:14pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+    <div style="font-size:18pt;font-weight:700;color:#007BA6;">What is a Process?</div>
+    <div style="margin-left:auto;font-size:10pt;font-weight:700;color:#007BA6;background:#e3f2fd;padding:4px 12px;border-radius:20px;white-space:nowrap;border:1px solid #b3d4e8;flex-shrink:0;">&#9679; ~15 minutes</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #d0d0d0;border-radius:6px;padding:20px 24px;margin-bottom:18px;">
+    <p style="margin:0 0 14px;">A <strong>process</strong> is a <strong>program in execution</strong>. A program sitting on a disk is just a file of instructions. When it is loaded into main memory and the CPU starts carrying out its instructions, the operating system (OS) treats it as a process and starts managing it.</p>
+    <div class="g2" style="margin-bottom:16px;">
+      <div style="background:#e3f2fd;border-radius:8px;padding:16px 18px;border-top:4px solid #007BA6;">
+        <div style="font-weight:700;color:#007BA6;font-size:15pt;margin-bottom:8px;">&#128190; Program</div>
+        <p style="margin:0;font-size:13pt;">A <strong>passive</strong> set of instructions stored in secondary storage. It does nothing on its own and uses no CPU time.</p>
+      </div>
+      <div style="background:#e8f5e9;border-radius:8px;padding:16px 18px;border-top:4px solid #388e3c;">
+        <div style="font-weight:700;color:#388e3c;font-size:15pt;margin-bottom:8px;">&#9881;&#65039; Process</div>
+        <p style="margin:0;font-size:13pt;">An <strong>active</strong> instance of a program that is being executed. It has its own memory space, its own current position in the code and its own set of resources (files, devices).</p>
+      </div>
+    </div>
+
+    <div class="g2" style="margin-bottom:16px;align-items:start;">
+      <div>
+        <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:8px;">Characteristics of a process</div>
+        <ul style="margin:0;padding-left:1.2em;font-size:13pt;line-height:1.9;">
+          <li>It has a unique <strong>process ID (PID)</strong>.</li>
+          <li>It is always in one <strong>state</strong> (e.g. ready, running, blocked).</li>
+          <li>It has a <strong>priority</strong> that can affect when it runs.</li>
+          <li>It has its own allocated <strong>memory</strong> and <strong>resources</strong>.</li>
+          <li>Its progress is recorded by the <strong>program counter</strong> and register values.</li>
+          <li>The same program can run as <strong>several processes</strong> at once — e.g. two browser windows.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="cls" style="margin-bottom:10px;">
+          <div class="cls-h">Process Control Block (PCB)</div>
+          <div class="cls-s">Process ID (PID)<br>Process state<br>Priority</div>
+          <div class="cls-s">Program counter<br>Register contents</div>
+          <div class="cls-s">Memory allocated<br>Open files / I/O devices</div>
+        </div>
+        <div style="font-size:12pt;color:#555;">The OS keeps a <strong>PCB</strong> for every process. It holds everything the OS needs to stop a process and later restart it exactly where it left off.</div>
+      </div>
+    </div>
+
+    <div style="border-left:4px solid #9966FF;background:#f3e5f5;padding:12px 16px;border-radius:0 6px 6px 0;margin-bottom:14px;">
+      <strong style="color:#9966FF;">Why is process management needed?</strong> A modern computer may have hundreds of processes but only a few CPU cores. A single core can execute only <strong>one process at a time</strong>. The OS must create and end processes, share out the CPU and memory, keep processes from interfering with each other, and switch between them so quickly that they appear to run at the same time. This is called <strong>multitasking</strong>.
+    </div>
+    <div style="border-left:4px solid #007BA6;background:#e3f2fd;padding:12px 16px;border-radius:0 6px 6px 0;">
+      <strong style="color:#007BA6;">Specification 1.2.3:</strong> For processes, process states, scheduling and the four scheduling algorithms (RR, FCFS, SJF, multi-level queue) you need to know the definition, function, characteristics, why it is needed, how it operates, its benefits and its drawbacks. You must also be able to interpret and complete diagrams of process states and of scheduling algorithms.
+    </div>
+  </div>
+
+  <!-- Activity 1 — match -->
+  <div class="act" data-n="1" style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9654; Activity 1 — Match the term to its definition</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;">Use the dropdowns to match each term to its definition.</div>
+    <div id="match1">
+      <div class="match-row"><div class="match-term">Program</div><select class="match-sel" data-ans="prog"></select></div>
+      <div class="match-row"><div class="match-term">Process</div><select class="match-sel" data-ans="proc"></select></div>
+      <div class="match-row"><div class="match-term">PCB</div><select class="match-sel" data-ans="pcb"></select></div>
+      <div class="match-row"><div class="match-term">PID</div><select class="match-sel" data-ans="pid"></select></div>
+      <div class="match-row"><div class="match-term">Multitasking</div><select class="match-sel" data-ans="multi"></select></div>
+    </div>
+    <button class="match-btn" id="match1-btn" onclick="checkMatch1()">&#10003; Check my answers</button>
+    <div class="match-result" id="match1-res"></div>
+  </div>
+
+  <!-- Activity 2 — word chip correct=c -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9998; Activity 2 — Fill in the gap</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:16px;line-height:1.6;">A program becomes a process when it is <span style="background:#1e1e2e;color:#fab387;font-family:'Courier New',monospace;padding:2px 10px;border-radius:4px;font-size:13pt;">&#9744;</span> into main memory and the CPU begins executing its instructions.</div>
+    <div id="opts2w">
+      <span class="wopt" onclick="pickWopt(2,'a',this)">compiled</span>
+      <span class="wopt" onclick="pickWopt(2,'b',this)">saved</span>
+      <span class="wopt" onclick="pickWopt(2,'c',this)">loaded</span>
+      <span class="wopt" onclick="pickWopt(2,'d',this)">deleted</span>
+    </div>
+    <div class="fb" id="fb2"></div>
+  </div>
+
+  <!-- Activity 3 — MCQ correct=d -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 3 — Multiple choice</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;line-height:1.5;">Which of these would <u>not</u> be stored in a process's Process Control Block?</div>
+    <div id="opts3">
+      <div class="opt" onclick="pickOpt(3,'a',this)">a) The process ID (PID)</div>
+      <div class="opt" onclick="pickOpt(3,'b',this)">b) The current state of the process</div>
+      <div class="opt" onclick="pickOpt(3,'c',this)">c) The saved program counter and register contents</div>
+      <div class="opt" onclick="pickOpt(3,'d',this)">d) The comments the programmer wrote in the source code</div>
+    </div>
+    <div class="fb" id="fb3"></div>
+  </div>
+
+  <!-- Activity 4 — TF -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 4 — True or False?</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;">Click True or False for each statement about processes.</div>
+    <div class="tf-row" id="tf1">
+      <div class="tf-stmt">A program and a process are exactly the same thing.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(1,true,false)">True</button><button class="tf-btn" onclick="doTF(1,false,false)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf2">
+      <div class="tf-stmt">Two copies of the same program running at once are two separate processes, each with its own PID.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(2,true,true)">True</button><button class="tf-btn" onclick="doTF(2,false,true)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf3">
+      <div class="tf-stmt">A single-core CPU can only be executing one process at any one instant.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(3,true,true)">True</button><button class="tf-btn" onclick="doTF(3,false,true)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf4">
+      <div class="tf-stmt">The PCB is saved inside the program file on the hard disk.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(4,true,false)">True</button><button class="tf-btn" onclick="doTF(4,false,false)">False</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 2 — PROCESS STATES
+══════════════════════════════════════════════ -->
+<div style="margin-bottom:48px;padding-bottom:48px;border-bottom:1px solid #d0d0d0;">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #007BA6;">
+    <div style="min-width:36px;height:36px;border-radius:50%;background:#007BA6;color:#fff;font-size:14pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+    <div style="font-size:18pt;font-weight:700;color:#007BA6;">Process States</div>
+    <div style="margin-left:auto;font-size:10pt;font-weight:700;color:#007BA6;background:#e3f2fd;padding:4px 12px;border-radius:20px;white-space:nowrap;border:1px solid #b3d4e8;flex-shrink:0;">&#9679; ~20 minutes</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #d0d0d0;border-radius:6px;padding:20px 24px;margin-bottom:18px;">
+    <p style="margin:0 0 14px;">From the moment it is created to the moment it ends, a process is always in exactly one <strong>state</strong>. The state tells the OS what the process is doing and whether it can be given the CPU. The OS records the state in the process's PCB.</p>
+
+    <div style="overflow-x:auto;margin-bottom:16px;">
+      <table class="cx-tbl">
+        <tr><th style="width:150px;">State</th><th>What it means</th></tr>
+        <tr><td style="font-weight:700;color:#007BA6;">New</td><td>The process is being created. The OS sets up its PCB and memory.</td></tr>
+        <tr><td style="font-weight:700;color:#388e3c;">Ready</td><td>The process is in main memory and could run straight away — it is only waiting for the CPU. Ready processes wait in the <strong>ready queue</strong>.</td></tr>
+        <tr><td style="font-weight:700;color:#e65100;">Running</td><td>The process's instructions are being executed by the CPU. On a single-core CPU only one process can be running.</td></tr>
+        <tr><td style="font-weight:700;color:#C62828;">Blocked<br><span style="font-weight:400;font-size:11pt;">(also called Waiting)</span></td><td>The process cannot continue until an event happens, such as an input/output (I/O) operation finishing or a key being pressed. Giving it the CPU would be pointless.</td></tr>
+        <tr><td style="font-weight:700;color:#666;">Terminated<br><span style="font-weight:400;font-size:11pt;">(also called Exit)</span></td><td>The process has finished or been stopped. The OS removes its PCB and frees its memory and resources.</td></tr>
+      </table>
+    </div>
+
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:8px;">The process state diagram</div>
+    <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:8px;padding:10px;margin-bottom:16px;">
+      <svg viewBox="0 0 820 380" style="width:100%;height:auto;display:block;" role="img" aria-label="Process state diagram">
+        <defs><marker id="ah1" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker></defs>
+        <g font-family="Lato,sans-serif">
+          <rect x="20" y="140" width="110" height="50" rx="8" fill="#e3f2fd" stroke="#007BA6" stroke-width="2"/><text x="75" y="171" text-anchor="middle" font-size="16" font-weight="700" fill="#007BA6">New</text>
+          <rect x="210" y="140" width="130" height="50" rx="8" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/><text x="275" y="171" text-anchor="middle" font-size="16" font-weight="700" fill="#388e3c">Ready</text>
+          <rect x="500" y="140" width="130" height="50" rx="8" fill="#fff3e0" stroke="#e65100" stroke-width="2"/><text x="565" y="171" text-anchor="middle" font-size="16" font-weight="700" fill="#e65100">Running</text>
+          <rect x="700" y="140" width="110" height="50" rx="8" fill="#eeeeee" stroke="#666" stroke-width="2"/><text x="755" y="171" text-anchor="middle" font-size="16" font-weight="700" fill="#555">Terminated</text>
+          <rect x="355" y="300" width="130" height="50" rx="8" fill="#ffebee" stroke="#C62828" stroke-width="2"/><text x="420" y="331" text-anchor="middle" font-size="16" font-weight="700" fill="#C62828">Blocked</text>
+          <g stroke="#333" stroke-width="2" fill="none" marker-end="url(#ah1)">
+            <line x1="130" y1="165" x2="206" y2="165"/>
+            <line x1="340" y1="155" x2="496" y2="155"/>
+            <line x1="500" y1="180" x2="344" y2="180"/>
+            <line x1="545" y1="190" x2="462" y2="296"/>
+            <line x1="378" y1="298" x2="300" y2="194"/>
+            <line x1="630" y1="165" x2="696" y2="165"/>
+          </g>
+          <g font-size="12" fill="#333">
+            <text x="168" y="156" text-anchor="middle">admitted</text>
+            <text x="418" y="146" text-anchor="middle" font-weight="700">dispatched</text>
+            <text x="420" y="200" text-anchor="middle" font-weight="700">time slice ends / interrupt</text>
+            <text x="560" y="250" font-weight="700">waits for I/O</text><text x="560" y="266" font-weight="700">or an event</text>
+            <text x="320" y="250" text-anchor="end" font-weight="700">I/O or event</text><text x="320" y="266" text-anchor="end" font-weight="700">completes</text>
+            <text x="663" y="156" text-anchor="middle">exits</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+
+    <div class="g2" style="margin-bottom:16px;">
+      <div style="background:#e3f2fd;border-radius:8px;padding:16px 18px;border-top:4px solid #007BA6;">
+        <div style="font-weight:700;color:#007BA6;font-size:14pt;margin-bottom:8px;">The six transitions</div>
+        <ul style="margin:0;padding-left:1.2em;font-size:13pt;line-height:1.75;">
+          <li><strong>New &rarr; Ready:</strong> admitted to the ready queue.</li>
+          <li><strong>Ready &rarr; Running:</strong> the scheduler <em>dispatches</em> it to the CPU.</li>
+          <li><strong>Running &rarr; Ready:</strong> its time slice ends, or a higher-priority process needs the CPU.</li>
+          <li><strong>Running &rarr; Blocked:</strong> it must wait for I/O or another event.</li>
+          <li><strong>Blocked &rarr; Ready:</strong> the I/O or event has completed.</li>
+          <li><strong>Running &rarr; Terminated:</strong> it finishes or is stopped.</li>
+        </ul>
+      </div>
+      <div style="background:#e8f5e9;border-radius:8px;padding:16px 18px;border-top:4px solid #388e3c;">
+        <div style="font-weight:700;color:#388e3c;font-size:14pt;margin-bottom:8px;">Why have states at all?</div>
+        <p style="margin:0 0 10px;font-size:13pt;">States let the OS see at a glance which processes <strong>can</strong> use the CPU (Ready) and which <strong>cannot</strong> (Blocked). The CPU is never wasted on a process that is just sitting and waiting for a slow device.</p>
+        <p style="margin:0;font-size:13pt;">While one process is blocked waiting for the printer, another ready process can be running — so the CPU is kept busy.</p>
+      </div>
+    </div>
+    <div style="border-left:4px solid #e65100;background:#fff3e0;padding:12px 16px;border-radius:0 6px 6px 0;">
+      <strong style="color:#e65100;">Watch out:</strong> there is <strong>no</strong> arrow from Blocked straight to Running. When a blocked process's I/O finishes, it goes back to <strong>Ready</strong> and waits to be chosen by the scheduler like everyone else.
+    </div>
+  </div>
+
+  <!-- Activity 5 — state diagram -->
+  <div class="act" data-n="5" style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9707; Activity 5 — Complete the process state diagram</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:6px;line-height:1.5;">Drag the missing states and transition labels onto the diagram. Two chips are not needed.</div>
+    <div class="tap-tip">Tip: you can also tap a chip and then tap a gap to place it.</div>
+    <div class="drag-bank" id="bank5">
+      <div class="drag-chip" draggable="true">Waits for I/O</div>
+      <div class="drag-chip" draggable="true">Running</div>
+      <div class="drag-chip" draggable="true">Compiled</div>
+      <div class="drag-chip" draggable="true">Dispatched</div>
+      <div class="drag-chip" draggable="true">Blocked</div>
+      <div class="drag-chip" draggable="true">I/O complete</div>
+      <div class="drag-chip" draggable="true">Ready</div>
+      <div class="drag-chip" draggable="true">Time slice ends</div>
+    </div>
+    <div style="overflow-x:auto;background:#fff;border:1px solid #d0d0d0;border-radius:6px;">
+      <div class="diag">
+        <svg viewBox="0 0 820 380" width="820" height="380" aria-hidden="true">
+          <defs><marker id="ah2" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker></defs>
+          <g font-family="Lato,sans-serif">
+            <rect x="20" y="140" width="110" height="50" rx="8" fill="#e3f2fd" stroke="#007BA6" stroke-width="2"/><text x="75" y="171" text-anchor="middle" font-size="16" font-weight="700" fill="#007BA6">New</text>
+            <rect x="210" y="140" width="130" height="50" rx="8" fill="#fff" stroke="#999" stroke-width="2" stroke-dasharray="6 4"/>
+            <rect x="500" y="140" width="130" height="50" rx="8" fill="#fff" stroke="#999" stroke-width="2" stroke-dasharray="6 4"/>
+            <rect x="700" y="140" width="110" height="50" rx="8" fill="#eeeeee" stroke="#666" stroke-width="2"/><text x="755" y="171" text-anchor="middle" font-size="16" font-weight="700" fill="#555">Terminated</text>
+            <rect x="355" y="300" width="130" height="50" rx="8" fill="#fff" stroke="#999" stroke-width="2" stroke-dasharray="6 4"/>
+            <g stroke="#333" stroke-width="2" fill="none" marker-end="url(#ah2)">
+              <line x1="130" y1="165" x2="206" y2="165"/>
+              <line x1="340" y1="155" x2="496" y2="155"/>
+              <line x1="500" y1="180" x2="344" y2="180"/>
+              <line x1="545" y1="190" x2="462" y2="296"/>
+              <line x1="378" y1="298" x2="300" y2="194"/>
+              <line x1="630" y1="165" x2="696" y2="165"/>
+            </g>
+            <g font-size="12" fill="#333">
+              <text x="168" y="156" text-anchor="middle">admitted</text>
+              <text x="320" y="250" text-anchor="end" font-weight="700">I/O or event</text><text x="320" y="266" text-anchor="end" font-weight="700">completes</text>
+              <text x="663" y="156" text-anchor="middle">exits</text>
+            </g>
+          </g>
+        </svg>
+        <span id="dz5a" class="drop-zone" style="left:214px;top:147px;width:122px;"></span>
+        <span id="dz5b" class="drop-zone" style="left:504px;top:147px;width:122px;"></span>
+        <span id="dz5c" class="drop-zone" style="left:359px;top:307px;width:122px;"></span>
+        <span id="dz5d" class="drop-zone" style="left:345px;top:106px;width:150px;"></span>
+        <span id="dz5e" class="drop-zone" style="left:345px;top:188px;width:150px;"></span>
+        <span id="dz5f" class="drop-zone" style="left:560px;top:236px;width:160px;"></span>
+      </div>
+    </div>
+    <button class="check-btn" id="btn5" onclick="checkDrop5()">&#10003; Check my diagram</button>
+    <div class="drag-result" id="res5"></div>
+  </div>
+
+  <!-- Activity 6 — MCQ correct=b -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 6 — Multiple choice</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;line-height:1.5;">A running word processor asks to open a document stored on the SSD. Which state does the process move to while it waits for the data?</div>
+    <div id="opts6">
+      <div class="opt" onclick="pickOpt(6,'a',this)">a) Ready</div>
+      <div class="opt" onclick="pickOpt(6,'b',this)">b) Blocked</div>
+      <div class="opt" onclick="pickOpt(6,'c',this)">c) Terminated</div>
+      <div class="opt" onclick="pickOpt(6,'d',this)">d) New</div>
+    </div>
+    <div class="fb" id="fb6"></div>
+  </div>
+
+  <!-- Activity 7 — MCQ correct=a -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 7 — Multiple choice</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;line-height:1.5;">When a blocked process's I/O operation finishes, why does it move to Ready rather than straight to Running?</div>
+    <div id="opts7">
+      <div class="opt" onclick="pickOpt(7,'a',this)">a) Another process may be using the CPU, so it must join the ready queue and wait to be chosen by the scheduler</div>
+      <div class="opt" onclick="pickOpt(7,'b',this)">b) A blocked process has to be restarted from its first instruction</div>
+      <div class="opt" onclick="pickOpt(7,'c',this)">c) The CPU is switched off while I/O is taking place</div>
+      <div class="opt" onclick="pickOpt(7,'d',this)">d) Only new processes are allowed to enter the Running state</div>
+    </div>
+    <div class="fb" id="fb7"></div>
+  </div>
+
+  <!-- Activity 8 — sequence -->
+  <div class="act" data-n="8" style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#8645; Activity 8 — Follow a process through its life</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:6px;line-height:1.5;">Drag the state the photo-editing process is in after each event. Every chip is used once.</div>
+    <div class="drag-bank" id="bank8">
+      <div class="drag-chip" draggable="true">Running</div>
+      <div class="drag-chip" draggable="true">Terminated</div>
+      <div class="drag-chip" draggable="true">Ready</div>
+      <div class="drag-chip" draggable="true">Blocked</div>
+      <div class="drag-chip" draggable="true">New</div>
+      <div class="drag-chip" draggable="true">Running</div>
+      <div class="drag-chip" draggable="true">Ready</div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="cx-tbl" style="background:#fff;">
+        <tr><th style="width:44px;">#</th><th>Event</th><th style="width:180px;">State</th></tr>
+        <tr><td>1</td><td>The user double-clicks the photo editor icon and the OS starts setting up the process.</td><td><span id="dz8a" class="drop-zone" style="min-width:150px;"></span></td></tr>
+        <tr><td>2</td><td>The process has been loaded and waits in a queue for its turn on the CPU.</td><td><span id="dz8b" class="drop-zone" style="min-width:150px;"></span></td></tr>
+        <tr><td>3</td><td>The scheduler picks it and its instructions start being executed.</td><td><span id="dz8c" class="drop-zone" style="min-width:150px;"></span></td></tr>
+        <tr><td>4</td><td>It asks to read a large photo from the hard disk.</td><td><span id="dz8d" class="drop-zone" style="min-width:150px;"></span></td></tr>
+        <tr><td>5</td><td>The hard disk finishes reading the photo.</td><td><span id="dz8e" class="drop-zone" style="min-width:150px;"></span></td></tr>
+        <tr><td>6</td><td>The scheduler gives it the CPU again.</td><td><span id="dz8f" class="drop-zone" style="min-width:150px;"></span></td></tr>
+        <tr><td>7</td><td>The user closes the program.</td><td><span id="dz8g" class="drop-zone" style="min-width:150px;"></span></td></tr>
+      </table>
+    </div>
+    <button class="check-btn" id="btn8" onclick="checkDrop8()">&#10003; Check my answers</button>
+    <div class="drag-result" id="res8"></div>
+  </div>
+
+  <!-- Activity 9 — TF -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 9 — True or False?</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;">Click True or False for each statement about process states.</div>
+    <div class="tf-row" id="tf5">
+      <div class="tf-stmt">A process in the Ready state has everything it needs to run except the CPU.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(5,true,true)">True</button><button class="tf-btn" onclick="doTF(5,false,true)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf6">
+      <div class="tf-stmt">A process can move directly from Blocked to Running.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(6,true,false)">True</button><button class="tf-btn" onclick="doTF(6,false,false)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf7">
+      <div class="tf-stmt">When a running process's time slice ends, it moves to the Blocked state.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(7,true,false)">True</button><button class="tf-btn" onclick="doTF(7,false,false)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf8">
+      <div class="tf-stmt">On a single-core CPU, many processes can be Ready or Blocked at the same time, but only one can be Running.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(8,true,true)">True</button><button class="tf-btn" onclick="doTF(8,false,true)">False</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 3 — SCHEDULING
+══════════════════════════════════════════════ -->
+<div style="margin-bottom:48px;padding-bottom:48px;border-bottom:1px solid #d0d0d0;">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #007BA6;">
+    <div style="min-width:36px;height:36px;border-radius:50%;background:#007BA6;color:#fff;font-size:14pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+    <div style="font-size:18pt;font-weight:700;color:#007BA6;">Scheduling</div>
+    <div style="margin-left:auto;font-size:10pt;font-weight:700;color:#007BA6;background:#e3f2fd;padding:4px 12px;border-radius:20px;white-space:nowrap;border:1px solid #b3d4e8;flex-shrink:0;">&#9679; ~10 minutes</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #d0d0d0;border-radius:6px;padding:20px 24px;margin-bottom:18px;">
+    <p style="margin:0 0 14px;"><strong>Scheduling</strong> is how the OS decides <strong>which ready process runs next</strong> on the CPU and <strong>for how long</strong>. The part of the OS that makes this decision is the <strong>scheduler</strong>. It follows a set of rules called a <strong>scheduling algorithm</strong>.</p>
+    <p style="margin:0 0 14px;"><strong>Why is it needed?</strong> There are usually far more ready processes than CPU cores. Without a fair, planned way of sharing the CPU, some processes would never run, the computer would feel slow and unresponsive, and the CPU would sit idle while processes waited for I/O.</p>
+
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:8px;">What a good scheduler tries to achieve</div>
+    <div class="g3" style="margin-bottom:16px;">
+      <div style="background:#e3f2fd;border-radius:8px;padding:12px 14px;font-size:12.5pt;"><strong style="color:#007BA6;">Keep the CPU busy</strong><br>Maximise CPU utilisation — never leave it idle if work is waiting.</div>
+      <div style="background:#e8f5e9;border-radius:8px;padding:12px 14px;font-size:12.5pt;"><strong style="color:#388e3c;">High throughput</strong><br>Complete as many processes as possible in a given time.</div>
+      <div style="background:#f3e5f5;border-radius:8px;padding:12px 14px;font-size:12.5pt;"><strong style="color:#9966FF;">Fairness</strong><br>Give every process a reasonable share of CPU time.</div>
+      <div style="background:#fff3e0;border-radius:8px;padding:12px 14px;font-size:12.5pt;"><strong style="color:#e65100;">Fast response</strong><br>Interactive programs should react quickly to the user.</div>
+      <div style="background:#ffebee;border-radius:8px;padding:12px 14px;font-size:12.5pt;"><strong style="color:#C62828;">Short waiting time</strong><br>Minimise the time processes spend in the ready queue.</div>
+      <div style="background:#eeeeee;border-radius:8px;padding:12px 14px;font-size:12.5pt;"><strong style="color:#555;">No starvation</strong><br>Every process should eventually get the CPU.</div>
+    </div>
+
+    <div class="g2" style="margin-bottom:16px;">
+      <div style="background:#fff3e0;border-radius:8px;padding:16px 18px;border-top:4px solid #e65100;">
+        <div style="font-weight:700;color:#e65100;font-size:15pt;margin-bottom:8px;">Pre-emptive scheduling</div>
+        <p style="margin:0;font-size:13pt;">The OS can <strong>take the CPU away</strong> from a running process — for example when its time slice ends or a higher-priority process arrives — and move it back to Ready. Good for responsiveness.</p>
+      </div>
+      <div style="background:#e3f2fd;border-radius:8px;padding:16px 18px;border-top:4px solid #007BA6;">
+        <div style="font-weight:700;color:#007BA6;font-size:15pt;margin-bottom:8px;">Non-pre-emptive scheduling</div>
+        <p style="margin:0;font-size:13pt;">Once a process has the CPU it <strong>keeps it</strong> until it finishes or blocks for I/O. Simpler, with fewer switches, but one long process can hold everybody up.</p>
+      </div>
+    </div>
+
+    <div style="border-left:4px solid #9966FF;background:#f3e5f5;padding:12px 16px;border-radius:0 6px 6px 0;margin-bottom:14px;">
+      <strong style="color:#9966FF;">Context switch:</strong> every time the CPU moves from one process to another, the OS saves the running process's program counter and registers into its PCB, then loads the saved values of the next process. This takes time during which no useful work is done, so too many switches waste CPU time.
+    </div>
+    <div style="border-left:4px solid #007BA6;background:#e3f2fd;padding:12px 16px;border-radius:0 6px 6px 0;">
+      <strong style="color:#007BA6;">Useful measures:</strong> <em>burst time</em> = how much CPU time a process needs; <em>waiting time</em> = time spent in the ready queue; <em>turnaround time</em> = time from arriving to finishing. You will use these to compare algorithms.
+    </div>
+  </div>
+
+  <!-- Activity 10 — word chip correct=b -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9998; Activity 10 — Fill in the gap</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:16px;line-height:1.6;">Saving the running process's register values into its PCB and loading the saved values of the next process is called a <span style="background:#1e1e2e;color:#fab387;font-family:'Courier New',monospace;padding:2px 10px;border-radius:4px;font-size:13pt;">&#9744;</span>.</div>
+    <div id="opts10w">
+      <span class="wopt" onclick="pickWopt(10,'a',this)">time slice</span>
+      <span class="wopt" onclick="pickWopt(10,'b',this)">context switch</span>
+      <span class="wopt" onclick="pickWopt(10,'c',this)">ready queue</span>
+      <span class="wopt" onclick="pickWopt(10,'d',this)">compilation</span>
+    </div>
+    <div class="fb" id="fb10"></div>
+  </div>
+
+  <!-- Activity 11 — MCQ correct=c -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 11 — Multiple choice</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;line-height:1.5;">Which statement best explains why an operating system needs scheduling?</div>
+    <div id="opts11">
+      <div class="opt" onclick="pickOpt(11,'a',this)">a) To translate programs from high-level code into machine code</div>
+      <div class="opt" onclick="pickOpt(11,'b',this)">b) To decide where each file should be saved on the disk</div>
+      <div class="opt" onclick="pickOpt(11,'c',this)">c) Many processes may be ready at once but a CPU core can only execute one at a time, so the OS must decide which runs next and for how long</div>
+      <div class="opt" onclick="pickOpt(11,'d',this)">d) To stop the user from opening more than one program at a time</div>
+    </div>
+    <div class="fb" id="fb11"></div>
+  </div>
+
+  <!-- Activity 12 — sort pre-emptive / non -->
+  <div class="act" data-n="12" style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#8644; Activity 12 — Sort: pre-emptive or non-pre-emptive?</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:6px;line-height:1.5;">Drag each statement into the type of scheduling it describes.</div>
+    <div class="drag-bank" id="bank12">
+      <div class="drag-chip" draggable="true">The OS takes the CPU back when a time slice ends</div>
+      <div class="drag-chip" draggable="true">A process keeps the CPU until it finishes</div>
+      <div class="drag-chip" draggable="true">A higher-priority arrival can take over the CPU</div>
+      <div class="drag-chip" draggable="true">A process only gives up the CPU when it needs I/O</div>
+      <div class="drag-chip" draggable="true">The running process can be moved back to Ready by the OS</div>
+      <div class="drag-chip" draggable="true">The OS never forces a running process off the CPU</div>
+    </div>
+    <div class="g2" style="margin-bottom:12px;">
+      <div>
+        <div style="font-size:13pt;font-weight:700;color:#e65100;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;text-align:center;">Pre-emptive</div>
+        <div id="sort12-pre" class="sort-zone drag-bank" style="border-color:#e65100;background:#fff8f0;min-height:130px;"></div>
+      </div>
+      <div>
+        <div style="font-size:13pt;font-weight:700;color:#007BA6;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;text-align:center;">Non-pre-emptive</div>
+        <div id="sort12-non" class="sort-zone drag-bank" style="border-color:#007BA6;background:#f0f8ff;min-height:130px;"></div>
+      </div>
+    </div>
+    <button class="check-btn" id="btn12" onclick="checkSort12()">&#10003; Check my sort</button>
+    <div class="drag-result" id="res12"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 4 — FCFS & ROUND ROBIN
+══════════════════════════════════════════════ -->
+<div style="margin-bottom:48px;padding-bottom:48px;border-bottom:1px solid #d0d0d0;">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #007BA6;">
+    <div style="min-width:36px;height:36px;border-radius:50%;background:#007BA6;color:#fff;font-size:14pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>
+    <div style="font-size:18pt;font-weight:700;color:#007BA6;">First-Come, First-Served &amp; Round Robin</div>
+    <div style="margin-left:auto;font-size:10pt;font-weight:700;color:#007BA6;background:#e3f2fd;padding:4px 12px;border-radius:20px;white-space:nowrap;border:1px solid #b3d4e8;flex-shrink:0;">&#9679; ~20 minutes</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #d0d0d0;border-radius:6px;padding:20px 24px;margin-bottom:18px;">
+    <p style="margin:0 0 14px;">Scheduling algorithms are often shown as a <strong>Gantt chart</strong>: a bar split into blocks, where each block shows which process had the CPU and the numbers underneath show the time. All the worked examples in this section use the same three processes, which all arrive at time 0 in the order A, B, C.</p>
+    <div style="overflow-x:auto;margin-bottom:18px;">
+      <table class="cx-tbl" style="max-width:420px;">
+        <tr><th>Process</th><th>Arrival time</th><th>Burst time</th></tr>
+        <tr><td><strong style="color:#007BA6;">A</strong></td><td>0</td><td>6</td></tr>
+        <tr><td><strong style="color:#388e3c;">B</strong></td><td>0</td><td>3</td></tr>
+        <tr><td><strong style="color:#9966FF;">C</strong></td><td>0</td><td>1</td></tr>
+      </table>
+    </div>
+
+    <!-- FCFS -->
+    <div style="font-size:16pt;font-weight:700;color:#007BA6;margin-bottom:8px;">First-Come, First-Served (FCFS)</div>
+    <p style="margin:0 0 12px;">The ready queue is a simple <strong>first in, first out</strong> queue. The process that arrived first gets the CPU and runs <strong>until it finishes or blocks</strong>. FCFS is <strong>non-pre-emptive</strong>.</p>
+    <div style="margin-bottom:6px;">
+      <div class="gantt"><div class="gc pA" style="flex:6 1 0;">A</div><div class="gc pB" style="flex:3 1 0;">B</div><div class="gc pC" style="flex:1 1 0;">C</div></div>
+      <div class="gt"><div style="flex:6 1 0;">0</div><div style="flex:3 1 0;">6</div><div style="flex:1 1 0;">9</div><span class="gt-end">10</span></div>
+    </div>
+    <p style="margin:10px 0 14px;font-size:13pt;">Waiting times: A = 0, B = 6, C = 9. <strong>Average waiting time = (0 + 6 + 9) &divide; 3 = 5</strong>. Notice that C needs only 1 unit of CPU time but waits 9 units behind A — this is called the <strong>convoy effect</strong>.</p>
+    <div class="g2" style="margin-bottom:22px;">
+      <div style="background:#e8f5e9;border-radius:8px;padding:14px 16px;font-size:13pt;"><strong style="color:#388e3c;">Benefits</strong><ul style="margin:6px 0 0;padding-left:1.2em;"><li>Very simple to understand and implement</li><li>Low overhead — few context switches</li><li>No starvation: every process eventually runs</li></ul></div>
+      <div style="background:#ffebee;border-radius:8px;padding:14px 16px;font-size:13pt;"><strong style="color:#C62828;">Drawbacks</strong><ul style="margin:6px 0 0;padding-left:1.2em;"><li>Short jobs can wait a long time behind long ones</li><li>Average waiting time is often high</li><li>Poor for interactive systems — one process can hog the CPU</li></ul></div>
+    </div>
+
+    <!-- RR -->
+    <div style="font-size:16pt;font-weight:700;color:#007BA6;margin-bottom:8px;">Round Robin (RR)</div>
+    <p style="margin:0 0 12px;">Each process is given a fixed amount of CPU time called a <strong>time slice</strong> (or <strong>quantum</strong>). If it has not finished when its time slice ends, it is <strong>pre-empted</strong> and sent to the <strong>back of the ready queue</strong>. If it finishes early, the next process starts straight away. Round robin is <strong>pre-emptive</strong>. Below, the time slice is 2.</p>
+    <div style="margin-bottom:6px;">
+      <div class="gantt"><div class="gc pA" style="flex:2 1 0;">A</div><div class="gc pB" style="flex:2 1 0;">B</div><div class="gc pC" style="flex:1 1 0;">C</div><div class="gc pA" style="flex:2 1 0;">A</div><div class="gc pB" style="flex:1 1 0;">B</div><div class="gc pA" style="flex:2 1 0;">A</div></div>
+      <div class="gt"><div style="flex:2 1 0;">0</div><div style="flex:2 1 0;">2</div><div style="flex:1 1 0;">4</div><div style="flex:2 1 0;">5</div><div style="flex:1 1 0;">7</div><div style="flex:2 1 0;">8</div><span class="gt-end">10</span></div>
+    </div>
+    <div style="overflow-x:auto;margin:14px 0;">
+      <table class="cx-tbl">
+        <tr><th>Time</th><th>Runs</th><th>What happens</th><th>Ready queue afterwards</th></tr>
+        <tr><td>0–2</td><td><strong>A</strong></td><td>Uses full slice, 4 units left &rarr; back of queue</td><td>B, C, A</td></tr>
+        <tr><td>2–4</td><td><strong>B</strong></td><td>Uses full slice, 1 unit left &rarr; back of queue</td><td>C, A, B</td></tr>
+        <tr><td>4–5</td><td><strong>C</strong></td><td>Needs only 1 unit &rarr; finishes early</td><td>A, B</td></tr>
+        <tr><td>5–7</td><td><strong>A</strong></td><td>Uses full slice, 2 units left &rarr; back of queue</td><td>B, A</td></tr>
+        <tr><td>7–8</td><td><strong>B</strong></td><td>Needs 1 unit &rarr; finishes</td><td>A</td></tr>
+        <tr><td>8–10</td><td><strong>A</strong></td><td>Needs 2 units &rarr; finishes</td><td>(empty)</td></tr>
+      </table>
+    </div>
+    <div class="g2" style="margin-bottom:14px;">
+      <div style="background:#e8f5e9;border-radius:8px;padding:14px 16px;font-size:13pt;"><strong style="color:#388e3c;">Benefits</strong><ul style="margin:6px 0 0;padding-left:1.2em;"><li>Fair — every process gets a regular turn</li><li>Good response time, so ideal for interactive and multi-user systems</li><li>No starvation</li></ul></div>
+      <div style="background:#ffebee;border-radius:8px;padding:14px 16px;font-size:13pt;"><strong style="color:#C62828;">Drawbacks</strong><ul style="margin:6px 0 0;padding-left:1.2em;"><li>Many context switches add overhead</li><li>Performance depends on the time slice size</li><li>Ignores priority — urgent processes wait their turn</li></ul></div>
+    </div>
+    <div style="border-left:4px solid #e65100;background:#fff3e0;padding:12px 16px;border-radius:0 6px 6px 0;">
+      <strong style="color:#e65100;">Choosing the time slice:</strong> if it is <strong>too small</strong>, the CPU spends a large share of its time context switching. If it is <strong>too large</strong> (longer than every burst), each process finishes in one go and round robin behaves just like FCFS.
+    </div>
+  </div>
+
+  <!-- Activity 13 — FCFS gantt -->
+  <div class="act" data-n="13" style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9707; Activity 13 — Complete the FCFS Gantt chart</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:10px;line-height:1.5;">These jobs arrive at <u>different</u> times. Drag each job into the order FCFS runs them, then drag the time each one finishes. Two chips are not needed.</div>
+    <div style="overflow-x:auto;margin-bottom:12px;">
+      <table class="cx-tbl" style="max-width:420px;">
+        <tr><th>Job</th><th>Arrival time</th><th>Burst time</th></tr>
+        <tr><td><strong>J1</strong></td><td>2</td><td>4</td></tr>
+        <tr><td><strong>J2</strong></td><td>0</td><td>7</td></tr>
+        <tr><td><strong>J3</strong></td><td>1</td><td>2</td></tr>
+      </table>
+    </div>
+    <div class="drag-bank" id="bank13">
+      <div class="drag-chip" draggable="true">J1</div>
+      <div class="drag-chip" draggable="true">13</div>
+      <div class="drag-chip" draggable="true">J3</div>
+      <div class="drag-chip" draggable="true">4</div>
+      <div class="drag-chip" draggable="true">9</div>
+      <div class="drag-chip" draggable="true">J2</div>
+      <div class="drag-chip" draggable="true">11</div>
+      <div class="drag-chip" draggable="true">7</div>
+    </div>
+    <div style="font-size:12pt;font-weight:700;color:#555;margin-bottom:4px;">Starts at time 0</div>
+    <div class="gantt" style="border-color:#007BA6;">
+      <div class="gslot" style="flex:1 1 0;"><span id="dz13a" class="drop-zone"></span></div>
+      <div class="gslot" style="flex:1 1 0;"><span id="dz13b" class="drop-zone"></span></div>
+      <div class="gslot" style="flex:1 1 0;"><span id="dz13c" class="drop-zone"></span></div>
+    </div>
+    <div style="display:flex;margin-top:6px;">
+      <div style="flex:1 1 0;text-align:right;padding-right:4px;font-size:12pt;">ends at <span id="dz13d" class="drop-zone" style="min-width:64px;"></span></div>
+      <div style="flex:1 1 0;text-align:right;padding-right:4px;font-size:12pt;">ends at <span id="dz13e" class="drop-zone" style="min-width:64px;"></span></div>
+      <div style="flex:1 1 0;text-align:right;font-size:12pt;">ends at <span id="dz13f" class="drop-zone" style="min-width:64px;"></span></div>
+    </div>
+    <button class="check-btn" id="btn13" onclick="checkDrop13()">&#10003; Check my chart</button>
+    <div class="drag-result" id="res13"></div>
+  </div>
+
+  <!-- Activity 14 — MCQ correct=b -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 14 — Multiple choice — read the chart</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;line-height:1.5;">Using your FCFS chart from Activity 13, how long does J1 spend waiting in the ready queue before it starts? (Waiting time = start time &minus; arrival time.)</div>
+    <div id="opts14">
+      <div class="opt" onclick="pickOpt(14,'a',this)">a) 9</div>
+      <div class="opt" onclick="pickOpt(14,'b',this)">b) 7</div>
+      <div class="opt" onclick="pickOpt(14,'c',this)">c) 2</div>
+      <div class="opt" onclick="pickOpt(14,'d',this)">d) 0</div>
+    </div>
+    <div class="fb" id="fb14"></div>
+  </div>
+
+  <!-- Activity 15 — RR gantt -->
+  <div class="act" data-n="15" style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9707; Activity 15 — Complete the round robin Gantt chart</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:10px;line-height:1.5;">Three processes arrive at time 0 in the order P1, P2, P3. The time slice is <u>2</u>. Drag the process that runs in each block. Every chip is used once.</div>
+    <div style="overflow-x:auto;margin-bottom:12px;">
+      <table class="cx-tbl" style="max-width:420px;">
+        <tr><th>Process</th><th>Arrival time</th><th>Burst time</th></tr>
+        <tr><td><strong>P1</strong></td><td>0</td><td>5</td></tr>
+        <tr><td><strong>P2</strong></td><td>0</td><td>2</td></tr>
+        <tr><td><strong>P3</strong></td><td>0</td><td>4</td></tr>
+      </table>
+    </div>
+    <div class="drag-bank" id="bank15">
+      <div class="drag-chip" draggable="true">P3</div>
+      <div class="drag-chip" draggable="true">P1</div>
+      <div class="drag-chip" draggable="true">P2</div>
+      <div class="drag-chip" draggable="true">P1</div>
+      <div class="drag-chip" draggable="true">P3</div>
+      <div class="drag-chip" draggable="true">P1</div>
+    </div>
+    <div style="overflow-x:auto;">
+      <div style="min-width:520px;">
+        <div class="gantt" style="border-color:#007BA6;">
+          <div class="gslot" style="flex:2 1 0;"><span id="dz15a" class="drop-zone"></span></div>
+          <div class="gslot" style="flex:2 1 0;"><span id="dz15b" class="drop-zone"></span></div>
+          <div class="gslot" style="flex:2 1 0;"><span id="dz15c" class="drop-zone"></span></div>
+          <div class="gslot" style="flex:2 1 0;"><span id="dz15d" class="drop-zone"></span></div>
+          <div class="gslot" style="flex:2 1 0;"><span id="dz15e" class="drop-zone"></span></div>
+          <div class="gslot" style="flex:1.4 1 0;"><span id="dz15f" class="drop-zone"></span></div>
+        </div>
+        <div style="display:flex;margin-top:4px;">
+          <div class="gtime" style="flex:2 1 0;">0–2</div><div class="gtime" style="flex:2 1 0;">2–4</div><div class="gtime" style="flex:2 1 0;">4–6</div><div class="gtime" style="flex:2 1 0;">6–8</div><div class="gtime" style="flex:2 1 0;">8–10</div><div class="gtime" style="flex:1.4 1 0;">10–11</div>
+        </div>
+      </div>
+    </div>
+    <button class="check-btn" id="btn15" onclick="checkDrop15()">&#10003; Check my chart</button>
+    <div class="drag-result" id="res15"></div>
+  </div>
+
+  <!-- Activity 16 — MCQ correct=d -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 16 — Multiple choice</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;line-height:1.5;">An OS uses round robin. What is the main problem if the time slice is made very small?</div>
+    <div id="opts16">
+      <div class="opt" onclick="pickOpt(16,'a',this)">a) Round robin turns into first-come, first-served</div>
+      <div class="opt" onclick="pickOpt(16,'b',this)">b) The longest processes are always completed first</div>
+      <div class="opt" onclick="pickOpt(16,'c',this)">c) Short processes can never get the CPU</div>
+      <div class="opt" onclick="pickOpt(16,'d',this)">d) The CPU spends a large proportion of its time on context switches instead of useful work</div>
+    </div>
+    <div class="fb" id="fb16"></div>
+  </div>
+
+  <!-- Activity 17 — TF -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 17 — True or False?</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;">Click True or False for each statement about FCFS and round robin.</div>
+    <div class="tf-row" id="tf9">
+      <div class="tf-stmt">FCFS is non-pre-emptive: once a process starts, it keeps the CPU until it finishes or blocks.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(9,true,true)">True</button><button class="tf-btn" onclick="doTF(9,false,true)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf10">
+      <div class="tf-stmt">In FCFS, a short job can never be held up behind a long job.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(10,true,false)">True</button><button class="tf-btn" onclick="doTF(10,false,false)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf11">
+      <div class="tf-stmt">In round robin, a process that has not finished when its time slice ends goes to the back of the ready queue.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(11,true,true)">True</button><button class="tf-btn" onclick="doTF(11,false,true)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf12">
+      <div class="tf-stmt">Round robin gives urgent, high-priority processes the CPU before everything else.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(12,true,false)">True</button><button class="tf-btn" onclick="doTF(12,false,false)">False</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 5 — SJF & MULTI-LEVEL QUEUE
+══════════════════════════════════════════════ -->
+<div style="margin-bottom:48px;padding-bottom:48px;border-bottom:1px solid #d0d0d0;">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #007BA6;">
+    <div style="min-width:36px;height:36px;border-radius:50%;background:#007BA6;color:#fff;font-size:14pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">5</div>
+    <div style="font-size:18pt;font-weight:700;color:#007BA6;">Shortest Job First &amp; Multi-level Queue</div>
+    <div style="margin-left:auto;font-size:10pt;font-weight:700;color:#007BA6;background:#e3f2fd;padding:4px 12px;border-radius:20px;white-space:nowrap;border:1px solid #b3d4e8;flex-shrink:0;">&#9679; ~15 minutes</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #d0d0d0;border-radius:6px;padding:20px 24px;margin-bottom:18px;">
+    <!-- SJF -->
+    <div style="font-size:16pt;font-weight:700;color:#007BA6;margin-bottom:8px;">Shortest Job First (SJF)</div>
+    <p style="margin:0 0 12px;">When the CPU becomes free, the scheduler picks the ready process with the <strong>shortest burst time</strong> (the least CPU time needed). The chosen process then runs to completion, so SJF is normally <strong>non-pre-emptive</strong>. Using the same processes as before (A = 6, B = 3, C = 1):</p>
+    <div style="margin-bottom:6px;">
+      <div class="gantt"><div class="gc pC" style="flex:1 1 0;">C</div><div class="gc pB" style="flex:3 1 0;">B</div><div class="gc pA" style="flex:6 1 0;">A</div></div>
+      <div class="gt"><div style="flex:1 1 0;">0</div><div style="flex:3 1 0;">1</div><div style="flex:6 1 0;">4</div><span class="gt-end">10</span></div>
+    </div>
+    <p style="margin:10px 0 14px;font-size:13pt;">Waiting times: C = 0, B = 1, A = 4. <strong>Average waiting time = (0 + 1 + 4) &divide; 3 &asymp; 1.67</strong> — much lower than FCFS's 5 for exactly the same work.</p>
+    <div class="g2" style="margin-bottom:14px;">
+      <div style="background:#e8f5e9;border-radius:8px;padding:14px 16px;font-size:13pt;"><strong style="color:#388e3c;">Benefits</strong><ul style="margin:6px 0 0;padding-left:1.2em;"><li>Gives the lowest possible average waiting time</li><li>High throughput — lots of short jobs finish quickly</li></ul></div>
+      <div style="background:#ffebee;border-radius:8px;padding:14px 16px;font-size:13pt;"><strong style="color:#C62828;">Drawbacks</strong><ul style="margin:6px 0 0;padding-left:1.2em;"><li>The OS must know or estimate burst times in advance, which is often impossible</li><li><strong>Starvation:</strong> a long job may wait forever if short jobs keep arriving</li></ul></div>
+    </div>
+    <div style="border-left:4px solid #9966FF;background:#f3e5f5;padding:12px 16px;border-radius:0 6px 6px 0;margin-bottom:24px;">
+      <strong style="color:#9966FF;">Going further:</strong> a pre-emptive version, <em>shortest remaining time</em>, switches to a newly arrived process if it needs less time than the one currently running.
+    </div>
+
+    <!-- MLQ -->
+    <div style="font-size:16pt;font-weight:700;color:#007BA6;margin-bottom:8px;">Multi-level Queue</div>
+    <p style="margin:0 0 12px;">Instead of one ready queue, the ready processes are split into <strong>several separate queues</strong>, each for a different type of process. Each queue has its <strong>own priority</strong> and can use its <strong>own scheduling algorithm</strong>. A process is placed in one queue when it is created and stays there.</p>
+    <div style="display:flex;gap:12px;align-items:stretch;margin-bottom:8px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:280px;">
+        <div class="q-row"><div class="q-lbl" style="background:#C62828;">Queue 0 — System<br><span style="font-weight:400;font-size:10.5pt;">highest priority</span></div><div class="q-box"><span class="q-p" style="background:#C62828;">S1</span><span class="q-p" style="background:#C62828;">S2</span></div><div class="q-alg">Round robin</div></div>
+        <div class="q-row"><div class="q-lbl" style="background:#e65100;">Queue 1 — Interactive<br><span style="font-weight:400;font-size:10.5pt;">medium priority</span></div><div class="q-box"><span class="q-p" style="background:#e65100;">I1</span><span class="q-p" style="background:#e65100;">I2</span><span class="q-p" style="background:#e65100;">I3</span></div><div class="q-alg">Round robin</div></div>
+        <div class="q-row"><div class="q-lbl" style="background:#007BA6;">Queue 2 — Batch<br><span style="font-weight:400;font-size:10.5pt;">lowest priority</span></div><div class="q-box"><span class="q-p" style="background:#007BA6;">B1</span><span class="q-p" style="background:#007BA6;">B2</span></div><div class="q-alg">FCFS</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="font-size:24pt;color:#007BA6;">&rarr;</div>
+        <div style="background:#1e1e2e;color:#a6e3a1;font-family:'Courier New',monospace;font-weight:700;font-size:14pt;padding:22px 24px;border-radius:8px;">CPU</div>
+      </div>
+    </div>
+    <p style="margin:6px 0 14px;font-size:13pt;">A common rule is <strong>fixed priority</strong>: the scheduler only takes from Queue 1 when Queue 0 is empty, and only from Queue 2 when Queues 0 and 1 are both empty.</p>
+    <div class="g2" style="margin-bottom:14px;">
+      <div style="background:#e8f5e9;border-radius:8px;padding:14px 16px;font-size:13pt;"><strong style="color:#388e3c;">Benefits</strong><ul style="margin:6px 0 0;padding-left:1.2em;"><li>Important processes are dealt with first</li><li>Each type of process gets an algorithm that suits it</li><li>Interactive programs stay responsive</li></ul></div>
+      <div style="background:#ffebee;border-radius:8px;padding:14px 16px;font-size:13pt;"><strong style="color:#C62828;">Drawbacks</strong><ul style="margin:6px 0 0;padding-left:1.2em;"><li>Low-priority queues can suffer <strong>starvation</strong></li><li>Inflexible — a process cannot move to a different queue</li><li>More complex to set up and manage</li></ul></div>
+    </div>
+    <div style="border-left:4px solid #9966FF;background:#f3e5f5;padding:12px 16px;border-radius:0 6px 6px 0;">
+      <strong style="color:#9966FF;">Going further:</strong> a <em>multi-level feedback queue</em> lets processes move between queues — for example, a process that has waited a long time can be promoted to a higher queue to prevent starvation.
+    </div>
+  </div>
+
+  <!-- Activity 18 — MCQ correct=c -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 18 — Multiple choice — apply SJF</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:10px;line-height:1.5;">Four processes all arrive at time 0. In what order will non-pre-emptive SJF run them?</div>
+    <div style="overflow-x:auto;margin-bottom:14px;">
+      <table class="cx-tbl" style="max-width:420px;">
+        <tr><th>Process</th><th>Burst time</th></tr>
+        <tr><td><strong>W</strong></td><td>8</td></tr>
+        <tr><td><strong>X</strong></td><td>2</td></tr>
+        <tr><td><strong>Y</strong></td><td>5</td></tr>
+        <tr><td><strong>Z</strong></td><td>1</td></tr>
+      </table>
+    </div>
+    <div id="opts18">
+      <div class="opt" onclick="pickOpt(18,'a',this)">a) W, X, Y, Z</div>
+      <div class="opt" onclick="pickOpt(18,'b',this)">b) W, Y, X, Z</div>
+      <div class="opt" onclick="pickOpt(18,'c',this)">c) Z, X, Y, W</div>
+      <div class="opt" onclick="pickOpt(18,'d',this)">d) X, Z, Y, W</div>
+    </div>
+    <div class="fb" id="fb18"></div>
+  </div>
+
+  <!-- Activity 19 — MCQ correct=b -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 19 — Multiple choice — read the queue diagram</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:10px;line-height:1.5;">A multi-level queue uses fixed priority (Queue 0 highest). Which process gets the CPU next?</div>
+    <div style="margin-bottom:14px;">
+      <div class="q-row"><div class="q-lbl" style="background:#C62828;">Queue 0 — System</div><div class="q-box"><span style="font-size:11pt;color:#999;font-style:italic;">(empty)</span></div></div>
+      <div class="q-row"><div class="q-lbl" style="background:#e65100;">Queue 1 — Interactive</div><div class="q-box"><span class="q-p" style="background:#e65100;">P4</span></div></div>
+      <div class="q-row"><div class="q-lbl" style="background:#007BA6;">Queue 2 — Batch</div><div class="q-box"><span class="q-p" style="background:#007BA6;">P1</span><span style="font-size:11pt;color:#555;">&nbsp;waiting for 10 minutes</span></div></div>
+    </div>
+    <div id="opts19">
+      <div class="opt" onclick="pickOpt(19,'a',this)">a) P1 — it has been waiting the longest</div>
+      <div class="opt" onclick="pickOpt(19,'b',this)">b) P4 — Queue 0 is empty, so the highest non-empty queue is Queue 1</div>
+      <div class="opt" onclick="pickOpt(19,'c',this)">c) P1 and P4 share the CPU equally</div>
+      <div class="opt" onclick="pickOpt(19,'d',this)">d) Neither — nothing runs until a process enters Queue 0</div>
+    </div>
+    <div class="fb" id="fb19"></div>
+  </div>
+
+  <!-- Activity 20 — word chip correct=a -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9998; Activity 20 — Fill in the gap</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:16px;line-height:1.6;">When a process waits indefinitely because shorter or higher-priority processes keep being chosen ahead of it, this is called <span style="background:#1e1e2e;color:#fab387;font-family:'Courier New',monospace;padding:2px 10px;border-radius:4px;font-size:13pt;">&#9744;</span>.</div>
+    <div id="opts20w">
+      <span class="wopt" onclick="pickWopt(20,'a',this)">starvation</span>
+      <span class="wopt" onclick="pickWopt(20,'b',this)">pre-emption</span>
+      <span class="wopt" onclick="pickWopt(20,'c',this)">multitasking</span>
+      <span class="wopt" onclick="pickWopt(20,'d',this)">buffering</span>
+    </div>
+    <div class="fb" id="fb20"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 6 — COMPARING ALGORITHMS
+══════════════════════════════════════════════ -->
+<div style="margin-bottom:48px;padding-bottom:48px;border-bottom:1px solid #d0d0d0;">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #007BA6;">
+    <div style="min-width:36px;height:36px;border-radius:50%;background:#007BA6;color:#fff;font-size:14pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">6</div>
+    <div style="font-size:18pt;font-weight:700;color:#007BA6;">Comparing Scheduling Algorithms</div>
+    <div style="margin-left:auto;font-size:10pt;font-weight:700;color:#007BA6;background:#e3f2fd;padding:4px 12px;border-radius:20px;white-space:nowrap;border:1px solid #b3d4e8;flex-shrink:0;">&#9679; ~10 minutes</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #d0d0d0;border-radius:6px;padding:20px 24px;margin-bottom:18px;">
+    <p style="margin:0 0 14px;">No single algorithm is best for every system. The right choice depends on what matters most: simplicity, fairness, fast response or getting the most work done.</p>
+    <div style="overflow-x:auto;margin-bottom:16px;">
+      <table class="cx-tbl" style="font-size:12pt;min-width:680px;">
+        <tr><th></th><th>FCFS</th><th>Round robin</th><th>SJF</th><th>Multi-level queue</th></tr>
+        <tr><td style="font-weight:700;">Chooses next process by</td><td>Order of arrival</td><td>Order of arrival, each for one time slice</td><td>Shortest burst time</td><td>Highest-priority non-empty queue</td></tr>
+        <tr><td style="font-weight:700;">Pre-emptive?</td><td>No</td><td>Yes</td><td>No (SRT version is)</td><td>Usually — a higher queue can interrupt a lower one</td></tr>
+        <tr><td style="font-weight:700;">Main benefit</td><td>Simple, low overhead</td><td>Fair, responsive</td><td>Lowest average waiting time</td><td>Important processes handled first</td></tr>
+        <tr><td style="font-weight:700;">Main drawback</td><td>Short jobs stuck behind long ones</td><td>Context-switching overhead</td><td>Needs burst times in advance</td><td>Complex; inflexible</td></tr>
+        <tr><td style="font-weight:700;">Starvation possible?</td><td>No</td><td>No</td><td>Yes — long jobs</td><td>Yes — low-priority queues</td></tr>
+        <tr><td style="font-weight:700;">Suits</td><td>Simple batch systems</td><td>Time-sharing, interactive systems</td><td>Batch jobs with known run times</td><td>General-purpose OSs with mixed workloads</td></tr>
+      </table>
+    </div>
+    <div style="border-left:4px solid #007BA6;background:#e3f2fd;padding:12px 16px;border-radius:0 6px 6px 0;">
+      <strong style="color:#007BA6;">Exam tip:</strong> when asked to describe how an algorithm operates, say <em>how the next process is chosen</em>, <em>how long it runs for</em> and <em>what happens if it does not finish</em>. When asked to evaluate, give a benefit <strong>and</strong> a drawback, linked to the type of system.
+    </div>
+  </div>
+
+  <!-- Activity 21 — match scenarios -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9654; Activity 21 — Match each algorithm to the situation it suits best</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;">Use the dropdowns. One situation is not needed.</div>
+    <div id="match2">
+      <div class="match-row"><div class="match-term">FCFS</div><select class="match-sel" data-ans="fcfs"></select></div>
+      <div class="match-row"><div class="match-term">Round robin</div><select class="match-sel" data-ans="rr"></select></div>
+      <div class="match-row"><div class="match-term">SJF</div><select class="match-sel" data-ans="sjf"></select></div>
+      <div class="match-row"><div class="match-term">Multi-level queue</div><select class="match-sel" data-ans="mlq"></select></div>
+    </div>
+    <button class="match-btn" id="match2-btn" onclick="checkMatch2()">&#10003; Check my answers</button>
+    <div class="match-result" id="match2-res"></div>
+  </div>
+
+  <!-- Activity 22 — paragraph -->
+  <div class="act" data-n="22" style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9998; Activity 22 — Review: fill in the gaps</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:6px;line-height:1.5;">Drag a word into each gap to complete the paragraph. Three chips are not needed.</div>
+    <div class="drag-bank" id="bank22">
+      <div class="drag-chip" draggable="true">scheduler</div>
+      <div class="drag-chip" draggable="true">Running</div>
+      <div class="drag-chip" draggable="true">starvation</div>
+      <div class="drag-chip" draggable="true">process</div>
+      <div class="drag-chip" draggable="true">FCFS</div>
+      <div class="drag-chip" draggable="true">compiler</div>
+      <div class="drag-chip" draggable="true">Blocked</div>
+      <div class="drag-chip" draggable="true">round robin</div>
+      <div class="drag-chip" draggable="true">program</div>
+      <div class="drag-chip" draggable="true">Ready</div>
+      <div class="drag-chip" draggable="true">SJF</div>
+    </div>
+    <div style="background:#fff;border:1px solid #d0d0d0;border-radius:6px;padding:16px 20px;font-size:14pt;line-height:2.6;">
+      A program that is being executed is called a <span id="dz22a" class="drop-zone"></span>. A process that is waiting only for the CPU is in the <span id="dz22b" class="drop-zone"></span> state, while a process waiting for an I/O operation to finish is <span id="dz22c" class="drop-zone"></span>. The <span id="dz22d" class="drop-zone"></span> decides which ready process runs next. <span id="dz22e" class="drop-zone"></span> gives every process a fixed time slice in turn, whereas <span id="dz22f" class="drop-zone"></span> runs each process to completion in the order it arrived. <span id="dz22g" class="drop-zone"></span> gives the lowest average waiting time, but long jobs may suffer <span id="dz22h" class="drop-zone"></span>.
+    </div>
+    <button class="check-btn" id="btn22" onclick="checkDrop22()">&#10003; Check my answers</button>
+    <div class="drag-result" id="res22"></div>
+  </div>
+</div>
+
+<!-- SUMMARY -->
+<div style="background:#007BA6;border-radius:8px;padding:28px 32px;margin-bottom:20px;">
+  <div style="font-size:16pt;font-weight:700;color:#ffffff;margin-bottom:16px;">&#10003; Summary — Topic 1.2.3: Process Management</div>
+  <div class="g2" style="gap:10px;">
+    <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px 16px;font-size:13pt;color:#fff;line-height:1.6;"><strong>Process:</strong> a program in execution, with its own PID, state, priority, memory and resources. The OS stores its details in a Process Control Block.</div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px 16px;font-size:13pt;color:#fff;line-height:1.6;"><strong>Process states:</strong> New &rarr; Ready &rarr; Running &rarr; Terminated, with Running &rarr; Ready (time slice ends), Running &rarr; Blocked (waits for I/O) and Blocked &rarr; Ready (I/O completes).</div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px 16px;font-size:13pt;color:#fff;line-height:1.6;"><strong>Scheduling:</strong> the scheduler decides which ready process gets the CPU and for how long, aiming for high utilisation, fairness, fast response and no starvation. It can be pre-emptive or non-pre-emptive.</div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px 16px;font-size:13pt;color:#fff;line-height:1.6;"><strong>FCFS:</strong> runs processes to completion in arrival order. Simple with no starvation, but short jobs can wait behind long ones.</div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px 16px;font-size:13pt;color:#fff;line-height:1.6;"><strong>Round robin:</strong> each process gets a fixed time slice, then goes to the back of the queue. Fair and responsive, but adds context-switching overhead.</div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px 16px;font-size:13pt;color:#fff;line-height:1.6;"><strong>SJF &amp; multi-level queue:</strong> SJF picks the shortest job for the lowest average wait; a multi-level queue serves separate priority queues in order. Both risk starvation.</div>
+  </div>
+</div>
+
+</div></div>
+<script>
+// ══════════════════════════════════════════════════
+//  BUILD MATCH DROPDOWNS (same options in every row)
+// ══════════════════════════════════════════════════
+var MATCH_OPTS = {
+  match1: [
+    ['pcb','A data structure the OS keeps for each process, storing its state, register values, priority and more'],
+    ['multi','The OS switching rapidly between processes so they appear to run at the same time'],
+    ['prog','A passive set of instructions stored on disk that is not currently running'],
+    ['pid','A unique number the OS gives each process to identify it'],
+    ['proc','A program that is being executed, together with its current state and allocated resources']
+  ],
+  match2: [
+    ['mlq','Different types of process need different priorities and different treatment'],
+    ['sjf','Run times are known in advance and the aim is the lowest average waiting time'],
+    ['x','The longest job should always be run first'],
+    ['fcfs','The simplest approach with minimal overhead — jobs handled strictly in arrival order'],
+    ['rr','Many users must each get a fair, regular share of the CPU']
+  ]
+};
+Object.keys(MATCH_OPTS).forEach(function(id) {
+  document.querySelectorAll('#' + id + ' .match-sel').forEach(function(sel) {
+    var h = '<option value="">— choose —</option>';
+    MATCH_OPTS[id].forEach(function(o){ h += '<option value="' + o[0] + '">' + o[1] + '</option>'; });
+    sel.innerHTML = h;
+  });
+});
+
+// ══════════════════════════════════════════════════
+//  MCQ — auto-submits on click
+// ══════════════════════════════════════════════════
+var mcqChosen = {};
+var MCQ_CORRECT = { 3:'d', 6:'b', 7:'a', 11:'c', 14:'b', 16:'d', 18:'c', 19:'b' };
+var MCQ_FB = {
+  3:{
+    ok:'&#10003; Correct! The PCB holds what the OS needs to manage and restart the process — PID, state, priority, program counter, registers, memory and I/O details. Source code comments are part of the original program text and are not needed to run it.',
+    a:'&#10007; The PID is stored in the PCB — it is how the OS identifies the process. Source code comments are the item that is not stored.',
+    b:'&#10007; The state (ready, running, blocked…) is a key part of the PCB. The item not stored is the programmer\'s source code comments.',
+    c:'&#10007; The program counter and registers are saved in the PCB so the process can restart exactly where it stopped. The comments are the item not stored.'
+  },
+  6:{
+    ok:'&#10003; Correct! Reading from the SSD is an I/O operation. The process cannot continue until the data arrives, so it moves from Running to Blocked and the CPU is given to another process.',
+    a:'&#10007; Ready means the process could run immediately if given the CPU — but this process cannot continue until the data arrives. It is Blocked.',
+    c:'&#10007; The process has not finished — it is just waiting for the data. It moves to Blocked.',
+    d:'&#10007; New is only used while a process is first being created. A process waiting for I/O is Blocked.'
+  },
+  7:{
+    ok:'&#10003; Correct! When the I/O finishes the process is able to run again, but the CPU may be busy with another process. It joins the ready queue and waits for the scheduler to dispatch it.',
+    b:'&#10007; The process carries on exactly where it stopped — its program counter is saved in its PCB. It goes to Ready because the CPU may be in use by another process.',
+    c:'&#10007; The CPU keeps working on other processes during I/O — that is the whole point of the Blocked state. The process goes to Ready to wait its turn.',
+    d:'&#10007; Any ready process can be dispatched to Running. The blocked process goes to Ready first because only the scheduler decides who gets the CPU next.'
+  },
+  11:{
+    ok:'&#10003; Correct! Scheduling is needed because the CPU must be shared: there are more ready processes than cores, so the OS has to decide the order and how long each one runs.',
+    a:'&#10007; Translating code is the job of a compiler or interpreter, not the scheduler.',
+    b:'&#10007; Deciding where files go is file management, not scheduling.',
+    d:'&#10007; Scheduling is what <em>allows</em> many programs to run at once by sharing the CPU — it does not stop them.'
+  },
+  14:{
+    ok:'&#10003; Correct! FCFS runs J2 (0–7), then J3 (7–9), then J1 (9–13). J1 arrived at time 2 and started at time 9, so it waited 9 &minus; 2 = 7.',
+    a:'&#10007; 9 is when J1 <em>starts</em>. It arrived at time 2, so its waiting time is 9 &minus; 2 = 7.',
+    c:'&#10007; 2 is J1\'s arrival time. It does not start until J2 and J3 have finished at time 9, so it waits 9 &minus; 2 = 7.',
+    d:'&#10007; J1 cannot start straight away — J2 and J3 arrived earlier, so J1 waits until time 9. 9 &minus; 2 = 7.'
+  },
+  16:{
+    ok:'&#10003; Correct! Every time slice ends with a context switch. With a tiny slice, switches happen constantly and a large share of CPU time is spent saving and loading process states instead of running processes.',
+    a:'&#10007; That happens when the slice is very <em>large</em> — each process finishes in one go. A very small slice causes too many context switches.',
+    b:'&#10007; Round robin does not favour long processes. The problem with a tiny slice is the overhead of constant context switching.',
+    c:'&#10007; Short processes still get regular turns in round robin. The real problem is time wasted on context switches.'
+  },
+  18:{
+    ok:'&#10003; Correct! SJF picks the shortest burst first: Z (1), X (2), Y (5), W (8). Waiting times are 0, 1, 3 and 8, so the average is 12 &divide; 4 = 3.',
+    a:'&#10007; That is the order they were listed (like FCFS). SJF always chooses the shortest job first: Z, X, Y, W.',
+    b:'&#10007; That runs the longest job first — the opposite of SJF. The order is Z (1), X (2), Y (5), W (8).',
+    d:'&#10007; Close, but Z (1) is shorter than X (2), so Z goes first: Z, X, Y, W.'
+  },
+  19:{
+    ok:'&#10003; Correct! With fixed priority the scheduler always takes from the highest-priority queue that is not empty. Queue 0 is empty, so P4 in Queue 1 runs. P1 keeps waiting — an example of how starvation can happen.',
+    a:'&#10007; In a multi-level queue, waiting time does not decide who runs — queue priority does. Queue 1 beats Queue 2, so P4 runs.',
+    c:'&#10007; With fixed priority, queues are not shared equally. The highest non-empty queue (Queue 1) gets the CPU, so P4 runs.',
+    d:'&#10007; The scheduler moves down to the next queue when a higher one is empty, so P4 in Queue 1 runs.'
+  }
+};
+function pickOpt(qNum, letter, el) {
+  if (mcqChosen[qNum] && mcqChosen[qNum].locked) return;
+  var box = el.parentNode;
+  box.querySelectorAll('.opt').forEach(function(o){ o.classList.remove('selected'); });
+  el.classList.add('selected');
+  mcqChosen[qNum] = { letter: letter, locked: false };
+  submitMCQ(qNum, letter);
+}
+function submitMCQ(qNum, letter) {
+  var correct = MCQ_CORRECT[qNum];
+  var isOk = (letter === correct);
+  var box = document.getElementById('opts' + qNum);
+  var fb  = document.getElementById('fb' + qNum);
+  box.querySelectorAll('.opt').forEach(function(el) {
+    el.classList.add('locked');
+    var m = el.getAttribute('onclick').match(/pickOpt\(\d+,'([a-d])'/);
+    var v = m ? m[1] : '';
+    if (v === correct) el.classList.add(isOk ? 'correct' : 'reveal');
+    else if (v === letter && !isOk) el.classList.add('wrong');
+  });
+  fb.style.display = 'block';
+  var fd = MCQ_FB[qNum];
+  fb.className = 'fb ' + (isOk ? 'fb-ok' : 'fb-bad');
+  fb.innerHTML = isOk ? fd.ok : (fd[letter] || '&#10007; Not quite — the correct answer is highlighted in green above.');
+  mcqChosen[qNum].locked = true;
+}
+
+// ══════════════════════════════════════════════════
+//  WORD CHIPS
+// ══════════════════════════════════════════════════
+var woptChosen = {};
+var WOPT_CORRECT = { 2:'c', 10:'b', 20:'a' };
+var WOPT_FB = {
+  2:{
+    ok:'&#10003; Correct! A program is <strong>loaded</strong> from secondary storage into main memory. Once the CPU starts executing it, the OS manages it as a process.',
+    a:'&#10007; Compiling translates source code into machine code — the result is still just a program file. It becomes a process when it is <strong>loaded</strong> into memory and run.',
+    b:'&#10007; Saving a program just stores it on disk. It becomes a process when it is <strong>loaded</strong> into main memory and executed.',
+    d:'&#10007; Deleting removes the program altogether. It becomes a process when it is <strong>loaded</strong> into memory and executed.'
+  },
+  10:{
+    ok:'&#10003; Correct! A <strong>context switch</strong> saves the state of one process in its PCB and restores the state of the next, so each process can carry on exactly where it left off.',
+    a:'&#10007; A time slice is the amount of CPU time a process is given. Saving and loading process states is a <strong>context switch</strong>.',
+    c:'&#10007; The ready queue holds processes waiting for the CPU. Saving and loading process states is a <strong>context switch</strong>.',
+    d:'&#10007; Compilation translates source code. Saving and loading process states is a <strong>context switch</strong>.'
+  },
+  20:{
+    ok:'&#10003; Correct! <strong>Starvation</strong> is when a process never (or very rarely) gets the CPU because others are always chosen first. SJF and multi-level queues are both at risk of it.',
+    b:'&#10007; Pre-emption is taking the CPU away from a running process. Waiting indefinitely is called <strong>starvation</strong>.',
+    c:'&#10007; Multitasking is running many processes by switching between them. Waiting indefinitely is called <strong>starvation</strong>.',
+    d:'&#10007; Buffering is holding data temporarily during transfer. Waiting indefinitely is called <strong>starvation</strong>.'
+  }
+};
+function pickWopt(qNum, letter, el) {
+  if (woptChosen[qNum]) return;
+  var container = el.parentNode;
+  var correct = WOPT_CORRECT[qNum];
+  var isOk = (letter === correct);
+  container.querySelectorAll('.wopt').forEach(function(w) {
+    w.classList.add('locked');
+    var m = w.getAttribute('onclick').match(/pickWopt\(\d+,'([a-d])'/);
+    var v = m ? m[1] : '';
+    if (v === correct) w.classList.add(isOk ? 'correct' : 'reveal');
+    else if (v === letter && !isOk) w.classList.add('wrong');
+  });
+  var fb = document.getElementById('fb' + qNum);
+  fb.style.display = 'block';
+  var fd = WOPT_FB[qNum];
+  fb.className = 'fb ' + (isOk ? 'fb-ok' : 'fb-bad');
+  fb.innerHTML = isOk ? fd.ok : (fd[letter] || '&#10007; Not quite — the correct answer is highlighted above.');
+  woptChosen[qNum] = true;
+}
+
+// ══════════════════════════════════════════════════
+//  TRUE / FALSE
+// ══════════════════════════════════════════════════
+var TF_DATA = {
+  1:{ ok:'&#10003; Correct — False! A program is a passive file of instructions; a process is that program being executed, with its own state and resources.', bad:'&#10007; This is False. A program is just stored instructions. A process is a program in execution.' },
+  2:{ ok:'&#10003; True! Each running copy is a separate process with its own PID, memory and state — e.g. two separate browser windows.', bad:'&#10007; This is True. Every running instance is its own process with its own PID.' },
+  3:{ ok:'&#10003; True! One core executes one process at a time. Multitasking works by switching between processes very quickly.', bad:'&#10007; This is True. A single core runs one process at a time — fast switching only makes it look simultaneous.' },
+  4:{ ok:'&#10003; Correct — False! The OS creates the PCB in memory when the process starts and removes it when the process ends.', bad:'&#10007; This is False. The PCB is created and kept in memory by the OS while the process exists — it is not part of the program file.' },
+  5:{ ok:'&#10003; True! A ready process is in memory and able to run — it is only waiting for the scheduler to give it the CPU.', bad:'&#10007; This is True. Ready processes have everything except the CPU.' },
+  6:{ ok:'&#10003; Correct — False! A blocked process must go to Ready first and wait to be dispatched.', bad:'&#10007; This is False. Blocked &rarr; Ready &rarr; Running. There is no direct Blocked &rarr; Running transition.' },
+  7:{ ok:'&#10003; Correct — False! When its time slice ends the process can still run, so it goes back to Ready. Blocked is only for processes waiting for I/O or an event.', bad:'&#10007; This is False. A time-slice interrupt sends the process to Ready, not Blocked.' },
+  8:{ ok:'&#10003; True! Any number of processes can be waiting in the Ready and Blocked states, but one core runs only one process at a time.', bad:'&#10007; This is True. Only one process can be Running on each core; the rest are Ready or Blocked.' },
+  9:{ ok:'&#10003; True! FCFS never forces a process off the CPU — it is non-pre-emptive.', bad:'&#10007; This is True. In FCFS a process keeps the CPU until it finishes or blocks.' },
+  10:{ ok:'&#10003; Correct — False! This is the convoy effect: in the worked example C needed 1 unit but waited 9 units behind A.', bad:'&#10007; This is False. In FCFS, a short job that arrives after a long one must wait for the long one to finish.' },
+  11:{ ok:'&#10003; True! The process is pre-empted, rejoins the back of the ready queue and gets another slice later.', bad:'&#10007; This is True. An unfinished process goes to the back of the ready queue when its slice ends.' },
+  12:{ ok:'&#10003; Correct — False! Round robin treats every process equally and ignores priority. A multi-level queue is one way of giving priority processes the CPU first.', bad:'&#10007; This is False. Round robin ignores priority — every process simply takes its turn.' }
+};
+function doTF(n, userAns, correctAns) {
+  var row = document.getElementById('tf' + n);
+  if (!row || row.classList.contains('done')) return;
+  row.classList.add('done');
+  var isOk = (userAns === correctAns);
+  row.querySelectorAll('.tf-btn').forEach(function(b) {
+    var bT = b.textContent.trim() === 'True';
+    if (bT === userAns) b.className = isOk ? 'tf-btn ok' : 'tf-btn bad';
+    if (!isOk && bT === correctAns) b.className = 'tf-btn show';
+  });
+  var fb = document.createElement('div');
+  fb.style.cssText = 'margin-top:8px;padding:10px 14px;border-radius:6px;font-size:13pt;line-height:1.6;font-family:Lato,sans-serif;';
+  fb.style.background = isOk ? '#e8f5e9' : '#ffebee';
+  fb.style.color      = isOk ? '#1b5e20' : '#7f0000';
+  fb.style.border     = isOk ? '1px solid #81c784' : '1px solid #ef9a9a';
+  fb.innerHTML = isOk ? TF_DATA[n].ok : TF_DATA[n].bad;
+  row.appendChild(fb);
+}
+
+// ══════════════════════════════════════════════════
+//  MATCH ACTIVITIES
+// ══════════════════════════════════════════════════
+function runMatch(matchId, btnId, resId, okMsg, badMsg) {
+  var rows = document.querySelectorAll('#' + matchId + ' .match-row');
+  var allOk = true;
+  rows.forEach(function(row) {
+    row.classList.remove('ok','bad');
+    var sel = row.querySelector('.match-sel');
+    if (sel.value === sel.getAttribute('data-ans')) row.classList.add('ok');
+    else { row.classList.add('bad'); allOk = false; }
+  });
+  var res = document.getElementById(resId);
+  res.style.display = 'block';
+  if (allOk) {
+    res.className = 'match-result fb fb-ok';
+    res.innerHTML = '&#10003; ' + okMsg;
+    document.getElementById(btnId).disabled = true;
+    rows.forEach(function(r){ r.querySelector('.match-sel').disabled = true; });
+  } else {
+    res.className = 'match-result fb fb-bad';
+    res.innerHTML = '&#10007; ' + badMsg;
+  }
+}
+function checkMatch1() {
+  runMatch('match1','match1-btn','match1-res',
+    'All correct! A <strong>program</strong> is stored instructions; a <strong>process</strong> is a program running; each process has a <strong>PID</strong> and a <strong>PCB</strong>; and switching quickly between processes gives <strong>multitasking</strong>.',
+    'One or more are wrong — check those in red. Think: stored (program) &rarr; running (process) &rarr; its ID number (PID) &rarr; its record (PCB) &rarr; many at once (multitasking).');
+}
+function checkMatch2() {
+  runMatch('match2','match2-btn','match2-res',
+    'All correct! FCFS = simplest; round robin = fair sharing for many users; SJF = lowest average wait when run times are known; multi-level queue = different treatment for different types of process.',
+    'One or more are wrong. Ask yourself what each algorithm is best at: simplicity, fairness, lowest waiting time, or handling priorities.');
+}
+
+// ══════════════════════════════════════════════════
+//  DRAG & DROP ENGINE (mouse drag + tap-to-place)
+// ══════════════════════════════════════════════════
+var DONE = {};
+document.querySelectorAll('[id^="bank"] .drag-chip').forEach(function(c){ c.setAttribute('data-home', c.parentNode.id); });
+
+function actOf(el) { return el && el.closest ? el.closest('.act') : null; }
+function dropTarget(el) {
+  if (!el || el.nodeType !== 1) el = el && el.parentNode;
+  return el && el.closest ? el.closest('.drop-zone, .drag-bank') : null;
+}
+function placeChip(chip, tgt) {
+  if (!chip || !tgt || chip.classList.contains('locked')) return;
+  var act = actOf(tgt);
+  if (!act || actOf(chip) !== act || DONE[act.getAttribute('data-n')]) return;
+  if (tgt.classList.contains('drop-zone')) {
+    var d = tgt.querySelector('.drag-chip');
+    if (d === chip) return;
+    if (d) {
+      var from = chip.parentNode;
+      if (from.classList.contains('drop-zone')) from.appendChild(d);
+      else document.getElementById(d.getAttribute('data-home')).appendChild(d);
+    }
+    tgt.appendChild(chip);
+  } else if (tgt !== chip.parentNode) {
+    tgt.appendChild(chip);
+  }
+}
+
+var _drag = null;
+document.addEventListener('dragstart', function(e) {
+  var t = e.target;
+  if (t.classList && t.classList.contains('drag-chip') && !t.classList.contains('locked')) {
+    _drag = t; e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', t.textContent);
+  }
+});
+document.addEventListener('dragover', function(e) {
+  var t = dropTarget(e.target);
+  if (t && _drag) { e.preventDefault(); t.classList.add('drag-over'); }
+});
+document.addEventListener('dragleave', function(e) {
+  var t = dropTarget(e.target); if (t) t.classList.remove('drag-over');
+});
+document.addEventListener('drop', function(e) {
+  e.preventDefault();
+  var t = dropTarget(e.target);
+  if (t) { t.classList.remove('drag-over'); placeChip(_drag, t); }
+  _drag = null;
+});
+document.addEventListener('dragend', function() {
+  _drag = null;
+  document.querySelectorAll('.drag-over').forEach(function(z){ z.classList.remove('drag-over'); });
+});
+
+var _pick = null;
+function unpick() { if (_pick) _pick.classList.remove('picked'); _pick = null; }
+document.addEventListener('click', function(e) {
+  var el = e.target; if (!el.closest) return;
+  var chip = el.closest('.drag-chip');
+  var tgt = el.closest('.drop-zone, .drag-bank');
+  if (!_pick) {
+    if (chip && !chip.classList.contains('locked')) { _pick = chip; chip.classList.add('picked'); }
+    return;
+  }
+  if (chip === _pick) { unpick(); return; }
+  if (chip && !chip.classList.contains('locked') && !chip.parentNode.classList.contains('drop-zone') && actOf(chip) === actOf(_pick)) {
+    unpick(); _pick = chip; chip.classList.add('picked'); return;
+  }
+  if (tgt) { placeChip(_pick, tgt); unpick(); return; }
+  unpick();
+});
+
+function getDZ(id) { var z = document.getElementById(id); var c = z ? z.querySelector('.drag-chip') : null; return c ? c.textContent.trim() : ''; }
+function getSort(id) { var z = document.getElementById(id); return z ? Array.from(z.querySelectorAll('.drag-chip')).map(function(c){ return c.textContent.trim(); }) : []; }
+function lockAct(n) {
+  var act = document.querySelector('.act[data-n="' + n + '"]');
+  if (act) act.querySelectorAll('.drag-chip').forEach(function(c){ c.classList.add('locked'); c.setAttribute('draggable','false'); });
+}
+
+// ══════════════════════════════════════════════════
+//  SLOT CHECKER
+// ══════════════════════════════════════════════════
+function checkSlots(n, ids, ans, okMsg, hints, emptyMsg) {
+  if (DONE[n]) return;
+  unpick();
+  var vals = ids.map(getDZ);
+  var res = document.getElementById('res' + n);
+  res.style.display = 'block';
+  if (vals.some(function(v){ return v === ''; })) {
+    res.className = 'drag-result fb fb-bad';
+    res.innerHTML = '&#10007; ' + emptyMsg;
+    return;
+  }
+  var wrong = [];
+  vals.forEach(function(v, i){ if (v !== ans[i]) wrong.push(hints[i]); });
+  if (wrong.length === 0) {
+    DONE[n] = true;
+    document.getElementById('btn' + n).disabled = true;
+    lockAct(n);
+    res.className = 'drag-result fb fb-ok';
+    res.innerHTML = '&#10003; ' + okMsg;
+  } else {
+    res.className = 'drag-result fb fb-bad';
+    res.innerHTML = '&#10007; Not quite. ' + wrong.slice(0, 2).join(' ') + (wrong.length > 2 ? ' (' + (wrong.length - 2) + ' more to fix.)' : '');
+  }
+}
+
+function checkDrop5() {
+  checkSlots(5, ['dz5a','dz5b','dz5c','dz5d','dz5e','dz5f'],
+    ['Ready','Running','Blocked','Dispatched','Time slice ends','Waits for I/O'],
+    'All correct! New processes are admitted to <strong>Ready</strong>, <strong>dispatched</strong> to <strong>Running</strong>, sent back to Ready when their <strong>time slice ends</strong>, and moved to <strong>Blocked</strong> when they <strong>wait for I/O</strong>. When the I/O completes they return to Ready.',
+    ['The state straight after New (admitted) is <strong>Ready</strong>.',
+     'The state where the CPU executes the process is <strong>Running</strong>.',
+     'The state for a process waiting for I/O is <strong>Blocked</strong>.',
+     'Ready &rarr; Running happens when the scheduler <strong>dispatches</strong> the process.',
+     'Running &rarr; Ready happens when the <strong>time slice ends</strong>.',
+     'Running &rarr; Blocked happens when the process <strong>waits for I/O</strong>.'],
+    'Drag a chip into every gap before checking.');
+}
+function checkDrop8() {
+  checkSlots(8, ['dz8a','dz8b','dz8c','dz8d','dz8e','dz8f','dz8g'],
+    ['New','Ready','Running','Blocked','Ready','Running','Terminated'],
+    'All correct! New &rarr; Ready &rarr; Running &rarr; Blocked (disk read) &rarr; Ready (disk finished) &rarr; Running &rarr; Terminated.',
+    ['Event 1: the process is still being created — <strong>New</strong>.',
+     'Event 2: waiting only for the CPU — <strong>Ready</strong>.',
+     'Event 3: being executed — <strong>Running</strong>.',
+     'Event 4: waiting for the disk (I/O) — <strong>Blocked</strong>.',
+     'Event 5: the I/O is done, so it goes back to <strong>Ready</strong> (not straight to Running).',
+     'Event 6: given the CPU again — <strong>Running</strong>.',
+     'Event 7: the program has ended — <strong>Terminated</strong>.'],
+    'Drag a state into every row before checking.');
+}
+function checkDrop13() {
+  checkSlots(13, ['dz13a','dz13b','dz13c','dz13d','dz13e','dz13f'],
+    ['J2','J3','J1','7','9','13'],
+    'All correct! J2 arrived first (time 0) and runs 0–7; J3 arrived next (time 1) and runs 7–9; J1 arrived last (time 2) and runs 9–13.',
+    ['Block 1: FCFS starts with the job that <strong>arrived first</strong> — J2 (time 0).',
+     'Block 2: the next arrival was J3 (time 1).',
+     'Block 3: the last arrival was J1 (time 2).',
+     'End 1: J2 starts at 0 and needs 7 units, so it ends at <strong>7</strong>.',
+     'End 2: J3 starts at 7 and needs 2 units, so it ends at <strong>9</strong>.',
+     'End 3: J1 starts at 9 and needs 4 units, so it ends at <strong>13</strong>.'],
+    'Drag a chip into every gap before checking.');
+}
+function checkDrop15() {
+  checkSlots(15, ['dz15a','dz15b','dz15c','dz15d','dz15e','dz15f'],
+    ['P1','P2','P3','P1','P3','P1'],
+    'All correct! P1 (0–2, 3 left), P2 (2–4, finished), P3 (4–6, 2 left), P1 (6–8, 1 left), P3 (8–10, finished), P1 (10–11, finished).',
+    ['0–2: the first process in the queue runs first — P1.',
+     '2–4: next in the queue is P2, which needs exactly 2 units and finishes.',
+     '4–6: next is P3.',
+     '6–8: P1 rejoined the back of the queue after its first slice, so it runs again.',
+     '8–10: P3 still needs 2 units and runs next.',
+     '10–11: only P1 is left, needing 1 more unit.'],
+    'Drag a process into every block before checking.');
+}
+function checkDrop22() {
+  checkSlots(22, ['dz22a','dz22b','dz22c','dz22d','dz22e','dz22f','dz22g','dz22h'],
+    ['process','Ready','Blocked','scheduler','round robin','FCFS','SJF','starvation'],
+    'All correct — a great summary of process management!',
+    ['Gap 1: a program being executed is a <strong>process</strong>.',
+     'Gap 2: waiting only for the CPU is the <strong>Ready</strong> state.',
+     'Gap 3: waiting for I/O is the <strong>Blocked</strong> state.',
+     'Gap 4: the part of the OS that chooses the next process is the <strong>scheduler</strong>.',
+     'Gap 5: fixed time slices in turn is <strong>round robin</strong>.',
+     'Gap 6: running to completion in arrival order is <strong>FCFS</strong>.',
+     'Gap 7: the lowest average waiting time comes from <strong>SJF</strong>.',
+     'Gap 8: waiting forever is <strong>starvation</strong>.'],
+    'Drag a word into every gap before checking.');
+}
+
+// ══════════════════════════════════════════════════
+//  TWO-COLUMN SORT
+// ══════════════════════════════════════════════════
+function checkCols(n, cols, names, total, okMsg, tip) {
+  if (DONE[n]) return;
+  unpick();
+  var res = document.getElementById('res' + n);
+  res.style.display = 'block';
+  var count = 0, wrong = [];
+  Object.keys(cols).forEach(function(zone) {
+    getSort(zone).forEach(function(v) {
+      count++;
+      if (cols[zone].indexOf(v) === -1) {
+        var home = Object.keys(cols).filter(function(z){ return cols[z].indexOf(v) !== -1; })[0];
+        wrong.push('“' + v + '” belongs in <strong>' + names[home] + '</strong>.');
+      }
+    });
+  });
+  if (count < total) { res.className = 'drag-result fb fb-bad'; res.innerHTML = '&#10007; Drag all ' + total + ' chips into a column before checking.'; return; }
+  if (wrong.length === 0) {
+    DONE[n] = true; document.getElementById('btn' + n).disabled = true; lockAct(n);
+    res.className = 'drag-result fb fb-ok'; res.innerHTML = '&#10003; ' + okMsg;
+  } else {
+    res.className = 'drag-result fb fb-bad'; res.innerHTML = '&#10007; ' + wrong.slice(0, 2).join(' ') + ' ' + tip;
+  }
+}
+function checkSort12() {
+  checkCols(12, {
+      'sort12-pre': ['The OS takes the CPU back when a time slice ends','A higher-priority arrival can take over the CPU','The running process can be moved back to Ready by the OS'],
+      'sort12-non': ['A process keeps the CPU until it finishes','A process only gives up the CPU when it needs I/O','The OS never forces a running process off the CPU']
+    },
+    { 'sort12-pre':'Pre-emptive', 'sort12-non':'Non-pre-emptive' }, 6,
+    'All correct! In pre-emptive scheduling the OS can take the CPU away from a running process. In non-pre-emptive scheduling the process keeps it until it finishes or blocks.',
+    'Tip: ask "can the OS force the process off the CPU?" If yes, it is pre-emptive.');
+}
+</script>
+</body>
+</html>
